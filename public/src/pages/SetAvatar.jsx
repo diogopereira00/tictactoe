@@ -7,6 +7,7 @@ import styled from "styled-components"
 import axios from "axios"
 import { Buffer } from "buffer"
 import { setAvatarRoute } from "../utils/APIRoutes";
+import Loader from "../components/Loader";
 
 
 
@@ -69,6 +70,7 @@ export default function SetAvatar() {
               console.log(image);
          
               const buffer = new Buffer(image.data);
+              console.log("buffer: " +  buffer);
               data.push(buffer.toString("base64"));
             }
             console.log(data);
@@ -85,12 +87,13 @@ export default function SetAvatar() {
         <>
             {isLoading ? (
                 <Container>
-                    <img src={loader} alt="loader" className="loader" />
+                    {/* <img src={loader} alt="loader" className="loader" /> */}
+                    <Loader/>
                 </Container>
             ) : (
                 <Container>
                     <div className="title-container">
-                        <h1>Pick an Avatar as your profile picture</h1>
+                        <h1>Seleciona uma imagem de perfil</h1>
                     </div>
                     <div className="avatars">
                         {avatars.map((avatar, index) => {
@@ -107,10 +110,14 @@ export default function SetAvatar() {
                                     />
                                 </div>
                             );
-                        })}
+                        }
+                        
+                        
+                        )}
+                        
                     </div>
                     <button onClick={setProfilePicture} className="submit-btn">
-                        Set as Profile Picture
+                        Definir imagem de perfil
                     </button>
                     <ToastContainer />
                 </Container>
@@ -151,13 +158,20 @@ const Container = styled.div`
           height: 6rem;
           transition: 0.5s ease-in-out;
         }
+        &:hover {
+            border: 0.4rem solid #00c6ff;
+
+        }
       }
       .selected {
-        border: 0.4rem solid #4e0eff;
+        border: 0.4rem solid #0a72e7;
+        &:hover{
+            border : 0.4rem solid #0a72e7;
+        }
       }
     }
     .submit-btn {
-      background-color: #4e0eff;
+      background-color: #0a72e7;
       color: white;
       padding: 1rem 2rem;
       border: none;
