@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import mais from "../assets/mais.png";
+import mais from "../assets/upload.png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
@@ -11,6 +11,9 @@ import Loader from "../components/Loader";
 
 export default function SetAvatar() {
   const api = "https://api.multiavatar.com/Y3fZ4WT7dkaQz1";
+  // falta usar a key
+  const apiKey = "?apikey=Y3fZ4WT7dkaQz1";
+  const [baseImage, setBaseImage] = useState(mais);
   const navigate = useNavigate();
   const [avatars, setAvatars] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,34 +52,39 @@ export default function SetAvatar() {
     }
   };
 
-  const atualizarFotos = async () => {
-    const data = [];
-    for (let i = 0; i < 4; i++) {
-      const image = await axios.get(
-        `${api}/${Math.round(Math.random() * 1000)}`
-      );
-      // console.log(image);
-
-      const buffer = new Buffer(image.data);
-      // console.log("buffer: " + buffer);
-      data.push(buffer.toString("base64"));
-      setAvatars(data);
-    }
+  const uploadImage = async (e) => {
+    const file = e.target.files[0];
+    const base64 = await convertBase64(file);
+    console.log(base64);
+    avatars[avatars.length - 1] = base64;
+    setBaseImage(base64);
   };
 
+  const convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
+
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
   useEffect(() => {
     async function fetchData() {
       const data = [];
-      for (let i = 0; i < 4; i++) {
-        const image = await axios.get(
-          `${api}/${Math.round(Math.random() * 1000)}`
-        );
+      for (let i = 0; i < 2; i++) {
+        const image = await axios.get(`${api}/${Math.round(Math.random() * 1000)}`);
         console.log(image);
 
         const buffer = new Buffer(image.data);
         console.log("buffer: " + buffer);
-        data.push(buffer.toString("base64"));
+        data.push("data:image/svg+xml;base64," + buffer.toString("base64"));
       }
+      data.push(baseImage);
       console.log(data);
       setAvatars(data);
       setIsLoading(false);
@@ -99,25 +107,38 @@ export default function SetAvatar() {
           <div className="avatars">
             {avatars.map((avatar, index) => {
               return (
-                <div
-                  className={`avatar ${
-                    selectedAvatar === index ? "selected" : ""
-                  }`}
-                >
-                  <img
-                    src={`data:image/svg+xml;base64,${avatar}`}
-                    alt="avatar"
-                    onClick={() => setSelectedAvatar(index)}
-                  />
+                <div className={`avatar ${selectedAvatar === index ? "selected" : ""}`}>
+                  {/* se for a ultima foto na lista, é para adicionar entao */}
+                  {index === avatars.length - 1 ? (
+                    <label htmlFor="file-input">
+                      <img
+                        className="displayImages"
+                        src={avatar}
+                        alt="avatar"
+                        id={index}
+                        onClick={() => setSelectedAvatar(index)}
+                      />
+                      <input
+                        className="displayFile"
+                        id="file-input"
+                        type="file"
+                        onChange={(e) => {
+                          uploadImage(e);
+                        }}
+                      />
+                    </label>
+                  ) : (
+                    // caso contrario
+                    <img
+                      src={avatar}
+                      alt="avatar"
+                      id={index}
+                      onClick={() => setSelectedAvatar(index)}
+                    />
+                  )}
                 </div>
               );
             })}
-          </div>
-
-          <div className="avatars">
-            <div className={`avatar ${selectedAvatar === 4 ? "selected" : ""}`}>
-              <img src={mais} alt="avatar" onClick={() => atualizarFotos()} />
-            </div>
           </div>
           <button onClick={setProfilePicture} className="submit-btn">
             Definir imagem de perfil
@@ -145,6 +166,13 @@ const Container = styled.div`
     h1 {
       color: white;
     }
+  }
+  .displayImages {
+    max-width: 96px;
+    border-radius: 50%;
+  }
+  .displayFile {
+    display: none;
   }
   .avatars {
     display: flex;
