@@ -3,15 +3,14 @@ import { useNavigate, Link } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import styled from "styled-components"
-import axios from "axios"
+import styled from "styled-components";
+import axios from "axios";
 import { loginRoute } from "../utils/APIRoutes";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { faUser, faLock } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 
 function Login() {
-
   const navigate = useNavigate();
   const toastOptions = {
     position: "bottom-right",
@@ -22,22 +21,20 @@ function Login() {
   };
 
   useEffect(() => {
-    if (localStorage.getItem('user')) {
+    if (localStorage.getItem("user")) {
       navigate("/");
     }
   }, []);
 
-
-  
   const [values, setValues] = useState({
     username: "",
     password: "",
   });
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async event => {
     event.preventDefault();
     if (handleValidation()) {
-      console.log("in validation", loginRoute)
+      console.log("in validation", loginRoute);
       const { password, username } = values;
       const { data } = await axios.post(loginRoute, {
         username,
@@ -45,31 +42,28 @@ function Login() {
       });
       if (data.status === true) {
         delete data.password;
-        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem("user", JSON.stringify(data.user));
         navigate("/");
-
       }
       if (data.status === false) {
         toast.error(data.msg, toastOptions);
       }
     }
-  }
-  const handleChange = (event) => {
+  };
+  const handleChange = event => {
     setValues({ ...values, [event.target.name]: event.target.value });
   };
-
-
 
   // MUDAR VALIDAÇOES
   const handleValidation = () => {
     const { password, username } = values;
-    if (username === "" || password==="") {
+    if (username === "" || password === "") {
       toast.warning(
         "Precisa de introduzir um username e uma password",
         toastOptions
       );
       return false;
-    } 
+    }
 
     return true;
   };
@@ -77,7 +71,7 @@ function Login() {
   return (
     <>
       <FormContainer>
-        <form autoComplete="off" onSubmit={(event) => handleSubmit(event)}>
+        <form autoComplete="off" onSubmit={event => handleSubmit(event)}>
           <div className="brand">
             <img src={Logo} alt="" />
             <h1>TicTacToe</h1>
@@ -87,11 +81,11 @@ function Login() {
             <div tabIndex={0} className="inputGroup">
               <FontAwesomeIcon size="lg" className="azul" icon={faUser} />
               <input
-
                 type="text"
                 placeholder="Introduza o nome de utilizador"
                 name="username"
-                onChange={e => handleChange(e)} />
+                onChange={e => handleChange(e)}
+              />
             </div>
           </div>
 
@@ -103,7 +97,8 @@ function Login() {
                 type="password"
                 placeholder="Introduza a sua palavra-passe"
                 name="password"
-                onChange={e => handleChange(e)} />
+                onChange={e => handleChange(e)}
+              />
             </div>
           </div>
 
@@ -112,12 +107,11 @@ function Login() {
             Não tens conta?
             <Link to="/register">Regista-te </Link>
           </span>
-
         </form>
       </FormContainer>
       <ToastContainer />
     </>
-  )
+  );
 }
 
 const FormContainer = styled.div`
@@ -146,8 +140,8 @@ const FormContainer = styled.div`
     color: #ffffff;
   }
 
-  .centerAlready{
-    padding-left:25%;
+  .centerAlready {
+    padding-left: 25%;
   }
   form {
     display: flex;
@@ -159,7 +153,7 @@ const FormContainer = styled.div`
     padding: 3rem 3rem;
   }
 
-  .inputGroup{
+  .inputGroup {
     background-color: transparent;
     padding: 1rem;
     border: 0.15rem solid #0a72e7;
@@ -174,14 +168,14 @@ const FormContainer = styled.div`
   input {
     background-color: transparent !important;
     color: white;
-    padding-left:1rem;
+    padding-left: 1rem;
     width: 80%;
     font-size: 1rem;
     border: 0;
     &:focus {
-      outline:none !important;
+      outline: none !important;
     }
-}
+  }
 
   button {
     background-color: #0a72e7;
@@ -200,9 +194,9 @@ const FormContainer = styled.div`
   span {
     color: white;
     text-transform: uppercase;
-    padding-left:15%;
+    padding-left: 15%;
     a {
-      margin-left:5px;
+      margin-left: 5px;
       color: #00c6ff;
       text-decoration: none;
       font-weight: bold;
@@ -211,9 +205,9 @@ const FormContainer = styled.div`
       }
     }
   }
-  .azul{
+  .azul {
     color: #0a72e7;
   }
 `;
 
-export default Login
+export default Login;

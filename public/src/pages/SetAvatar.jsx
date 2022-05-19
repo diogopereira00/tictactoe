@@ -1,187 +1,189 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import loader from "../assets/LOADER2.gif";
+import mais from "../assets/mais.png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import styled from "styled-components"
-import axios from "axios"
-import { Buffer } from "buffer"
+import styled from "styled-components";
+import axios from "axios";
+import { Buffer } from "buffer";
 import { setAvatarRoute } from "../utils/APIRoutes";
 import Loader from "../components/Loader";
 
-
-
 export default function SetAvatar() {
+  const api = "https://api.multiavatar.com/Y3fZ4WT7dkaQz1";
+  const navigate = useNavigate();
+  const [avatars, setAvatars] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedAvatar, setSelectedAvatar] = useState(undefined);
+  const toastOptions = {
+    position: "bottom-right",
+    autoClose: 5000,
+    pauseOnHover: true,
+    draggable: true,
+    theme: "dark",
+  };
 
+  // useEffect(async () => {
+  //     if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY))
+  //         navigate("/login");
+  // }, []);
 
-    const api = "https://api.multiavatar.com/45678945";
-    const navigate = useNavigate();
-    const [avatars, setAvatars] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [selectedAvatar, setSelectedAvatar] = useState(undefined);
-    const toastOptions = {
-        position: "bottom-right",
-        autoClose: 5000,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "dark",
-    };
+  const setProfilePicture = async () => {
+    if (selectedAvatar === undefined) {
+      toast.error("Please select an avatar", toastOptions);
+    } else {
+      const user = await JSON.parse(localStorage.getItem("user"));
 
-    // useEffect(async () => {
-    //     if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY))
-    //         navigate("/login");
-    // }, []);
+      const { data } = await axios.post(`${setAvatarRoute}/${user._id}`, {
+        image: avatars[selectedAvatar],
+      });
 
+      if (data.isSet) {
+        user.isAvatarImageSet = true;
+        user.avatarImage = data.image;
+        localStorage.setItem("user", JSON.stringify(user));
+        navigate("/");
+      } else {
+        toast.error("Error setting avatar. Please try again.", toastOptions);
+      }
+    }
+  };
 
+  const atualizarFotos = async () => {
+    const data = [];
+    for (let i = 0; i < 4; i++) {
+      const image = await axios.get(
+        `${api}/${Math.round(Math.random() * 1000)}`
+      );
+      // console.log(image);
 
-    const setProfilePicture = async () => {
-        if (selectedAvatar === undefined) {
-            toast.error("Please select an avatar", toastOptions);
-        } else {
-            const user = await JSON.parse(
-                localStorage.getItem("user")
-            );
+      const buffer = new Buffer(image.data);
+      // console.log("buffer: " + buffer);
+      data.push(buffer.toString("base64"));
+      setAvatars(data);
+    }
+  };
 
-            const { data } = await axios.post(`${setAvatarRoute}/${user._id}`, {
-                image: avatars[selectedAvatar],
-            });
+  useEffect(() => {
+    async function fetchData() {
+      const data = [];
+      for (let i = 0; i < 4; i++) {
+        const image = await axios.get(
+          `${api}/${Math.round(Math.random() * 1000)}`
+        );
+        console.log(image);
 
-            if (data.isSet) {
-                user.isAvatarImageSet = true;
-                user.avatarImage = data.image;
-                localStorage.setItem(
-                    "user",
-                    JSON.stringify(user)
-                );
-                navigate("/");
-            } else {
-                toast.error("Error setting avatar. Please try again.", toastOptions);
-            }
-        }
-    };
+        const buffer = new Buffer(image.data);
+        console.log("buffer: " + buffer);
+        data.push(buffer.toString("base64"));
+      }
+      console.log(data);
+      setAvatars(data);
+      setIsLoading(false);
+    }
+    fetchData();
+  }, []);
 
-    useEffect( () => {
-        async function fetchData(){
-            const data = [];
-            for (let i = 0; i < 4; i++) {
-              const image = await axios.get(
-                `${api}/${Math.round(Math.random() * 1000)}`
+  return (
+    <>
+      {isLoading ? (
+        <Container>
+          {/* <img src={loader} alt="loader" className="loader" /> */}
+          <Loader />
+        </Container>
+      ) : (
+        <Container>
+          <div className="title-container">
+            <h1>Seleciona uma imagem de perfil</h1>
+          </div>
+          <div className="avatars">
+            {avatars.map((avatar, index) => {
+              return (
+                <div
+                  className={`avatar ${
+                    selectedAvatar === index ? "selected" : ""
+                  }`}
+                >
+                  <img
+                    src={`data:image/svg+xml;base64,${avatar}`}
+                    alt="avatar"
+                    onClick={() => setSelectedAvatar(index)}
+                  />
+                </div>
               );
-              console.log(image);
-         
-              const buffer = new Buffer(image.data);
-              console.log("buffer: " +  buffer);
-              data.push(buffer.toString("base64"));
-            }
-            console.log(data);
-            setAvatars(data);
-            setIsLoading(false);
-        }
-        fetchData();
-      }, []);
+            })}
+          </div>
 
-
-
-
-    return (
-        <>
-            {isLoading ? (
-                <Container>
-                    {/* <img src={loader} alt="loader" className="loader" /> */}
-                    <Loader/>
-                </Container>
-            ) : (
-                <Container>
-                    <div className="title-container">
-                        <h1>Seleciona uma imagem de perfil</h1>
-                    </div>
-                    <div className="avatars">
-                        {avatars.map((avatar, index) => {
-                            return (
-                                <div
-                                    className={`avatar ${selectedAvatar === index ? "selected" : ""
-                                        }`}
-                                >
-                                    <img
-                                        src={`data:image/svg+xml;base64,${avatar}`}
-                                        alt="avatar"
-                                        key={avatar}
-                                        onClick={() => setSelectedAvatar(index)}
-                                    />
-                                </div>
-                            );
-                        }
-                        
-                        
-                        )}
-                        
-                    </div>
-                    <button onClick={setProfilePicture} className="submit-btn">
-                        Definir imagem de perfil
-                    </button>
-                    <ToastContainer />
-                </Container>
-            )}
-        </>
-    );
+          <div className="avatars">
+            <div className={`avatar ${selectedAvatar === 4 ? "selected" : ""}`}>
+              <img src={mais} alt="avatar" onClick={() => atualizarFotos()} />
+            </div>
+          </div>
+          <button onClick={setProfilePicture} className="submit-btn">
+            Definir imagem de perfil
+          </button>
+          <ToastContainer />
+        </Container>
+      )}
+    </>
+  );
 }
 
 const Container = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 3rem;
-    background-color: #131324;
-    height: 100vh;
-    width: 100vw;
-    .loader {
-      max-inline-size: 100%;
-    }
-    .title-container {
-      h1 {
-        color: white;
-      }
-    }
-    .avatars {
-      display: flex;
-      gap: 2rem;
-      .avatar {
-        border: 0.4rem solid transparent;
-        padding: 0.4rem;
-        border-radius: 5rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: 0.5s ease-in-out;
-        img {
-          height: 6rem;
-          transition: 0.5s ease-in-out;
-        }
-        &:hover {
-            border: 0.4rem solid #00c6ff;
-
-        }
-      }
-      .selected {
-        border: 0.4rem solid #0a72e7;
-        &:hover{
-            border : 0.4rem solid #0a72e7;
-        }
-      }
-    }
-    .submit-btn {
-      background-color: #0a72e7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 3rem;
+  background-color: #131324;
+  height: 100vh;
+  width: 100vw;
+  .loader {
+    max-inline-size: 100%;
+  }
+  .title-container {
+    h1 {
       color: white;
-      padding: 1rem 2rem;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 0.4rem;
-      font-size: 1rem;
-      text-transform: uppercase;
+    }
+  }
+  .avatars {
+    display: flex;
+    gap: 2rem;
+    .avatar {
+      border: 0.4rem solid transparent;
+      padding: 0.4rem;
+      border-radius: 5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: 0.5s ease-in-out;
+      img {
+        height: 6rem;
+        transition: 0.5s ease-in-out;
+      }
       &:hover {
-        background-color: #4e0eff;
+        border: 0.4rem solid #00c6ff;
       }
     }
-  `;
+    .selected {
+      border: 0.4rem solid #0a72e7;
+      &:hover {
+        border: 0.4rem solid #0a72e7;
+      }
+    }
+  }
+  .submit-btn {
+    background-color: #0a72e7;
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 0.4rem;
+    font-size: 1rem;
+    text-transform: uppercase;
+    &:hover {
+      background-color: #4e0eff;
+    }
+  }
+`;

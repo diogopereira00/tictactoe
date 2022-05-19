@@ -3,15 +3,19 @@ import { useNavigate, Link } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import styled from "styled-components"
-import axios from "axios"
+import styled from "styled-components";
+import axios from "axios";
 import { registerRoute } from "../utils/APIRoutes";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { faUser, faEnvelope, faLock, faUnlock } from '@fortawesome/free-solid-svg-icons'
+import {
+  faUser,
+  faEnvelope,
+  faLock,
+  faUnlock,
+} from "@fortawesome/free-solid-svg-icons";
 
 function Register() {
-
   const navigate = useNavigate();
   const toastOptions = {
     position: "bottom-right",
@@ -22,7 +26,7 @@ function Register() {
   };
 
   useEffect(() => {
-    if (localStorage.getItem('user')) {
+    if (localStorage.getItem("user")) {
       navigate("/");
     }
   }, []);
@@ -34,33 +38,31 @@ function Register() {
     confirmPassword: "",
   });
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async event => {
     event.preventDefault();
-
+    //faz a validação
     if (handleValidation()) {
-      console.log("in validation", registerRoute)
+      console.log("in validation", registerRoute);
       const { password, username, email } = values;
       const { data } = await axios.post(registerRoute, {
         username,
         email,
         password,
       });
-
+      console.log(data.password);
+      //se os dados tiverem ok guardo a sessão no localStorage e vou para home page
       if (data.status === true) {
-        localStorage.setItem('user', JSON.stringify(data.user));
-        navigate("/");
-
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/setAvatar");
       }
       if (data.status === false) {
         toast.error(data.msg, toastOptions);
       }
     }
-  }
-  const handleChange = (event) => {
+  };
+  const handleChange = event => {
     setValues({ ...values, [event.target.name]: event.target.value });
   };
-
-
 
   // MUDAR VALIDAÇOES
   const handleValidation = () => {
@@ -94,7 +96,7 @@ function Register() {
   return (
     <>
       <FormContainer>
-        <form autoComplete="off" onSubmit={(event) => handleSubmit(event)}>
+        <form autoComplete="off" onSubmit={event => handleSubmit(event)}>
           <div className="brand">
             <img src={Logo} alt="" />
             <h1>TicTacToe</h1>
@@ -104,11 +106,11 @@ function Register() {
             <div tabIndex={0} className="inputGroup">
               <FontAwesomeIcon size="lg" className="azul" icon={faUser} />
               <input
-
                 type="text"
                 placeholder="Introduza o nome de utilizador"
                 name="username"
-                onChange={e => handleChange(e)} />
+                onChange={e => handleChange(e)}
+              />
             </div>
           </div>
 
@@ -120,7 +122,8 @@ function Register() {
                 type="email"
                 placeholder="Introduza o seu email"
                 name="email"
-                onChange={e => handleChange(e)} />
+                onChange={e => handleChange(e)}
+              />
             </div>
           </div>
 
@@ -132,7 +135,8 @@ function Register() {
                 type="password"
                 placeholder="Introduza a sua palavra-passe"
                 name="password"
-                onChange={e => handleChange(e)} />
+                onChange={e => handleChange(e)}
+              />
             </div>
           </div>
           <div>
@@ -143,7 +147,8 @@ function Register() {
                 type="password"
                 placeholder="Introduza a sua palavra-passe"
                 name="confirmPassword"
-                onChange={e => handleChange(e)} />
+                onChange={e => handleChange(e)}
+              />
             </div>
           </div>
 
@@ -152,12 +157,11 @@ function Register() {
             Já tens conta?
             <Link to="/login">Login </Link>
           </span>
-
         </form>
       </FormContainer>
       <ToastContainer />
     </>
-  )
+  );
 }
 
 const FormContainer = styled.div`
@@ -186,8 +190,8 @@ const FormContainer = styled.div`
     color: #ffffff;
   }
 
-  .centerAlready{
-    padding-left:25%;
+  .centerAlready {
+    padding-left: 25%;
   }
   form {
     display: flex;
@@ -199,7 +203,7 @@ const FormContainer = styled.div`
     padding: 3rem 3rem;
   }
 
-  .inputGroup{
+  .inputGroup {
     background-color: transparent;
     padding: 1rem;
     border: 0.15rem solid #0a72e7;
@@ -214,14 +218,14 @@ const FormContainer = styled.div`
   input {
     background-color: transparent !important;
     color: white;
-    padding-left:1rem;
+    padding-left: 1rem;
     width: 80%;
     font-size: 1rem;
     border: 0;
     &:focus {
-      outline:none !important;
+      outline: none !important;
     }
-}
+  }
 
   button {
     background-color: #0a72e7;
@@ -240,9 +244,9 @@ const FormContainer = styled.div`
   span {
     color: white;
     text-transform: uppercase;
-    padding-left:15%;
+    padding-left: 15%;
     a {
-      margin-left:5px;
+      margin-left: 5px;
       color: #00c6ff;
       text-decoration: none;
       font-weight: bold;
@@ -251,9 +255,9 @@ const FormContainer = styled.div`
       }
     }
   }
-  .azul{
+  .azul {
     color: #0a72e7;
   }
 `;
 
-export default Register
+export default Register;

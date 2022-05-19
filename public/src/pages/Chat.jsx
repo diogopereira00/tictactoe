@@ -1,13 +1,13 @@
-import React from 'react'
-import Loader from '../components/Loader'
+import React from "react";
+import Loader from "../components/Loader";
 
 function Chat() {
   return (
     <>
-    <div>Chat</div>
-    <Loader/>
+      <div>Chat</div>
+      <Loader />
     </>
-  )
+  );
 }
 
-export default Chat
+export default Chat;
