@@ -103,9 +103,17 @@ function Register() {
           </div>
           <div>
             <label htmlFor="username">Nome de utilizador</label>
-            <div tabIndex={0} className="inputGroup">
+            <div
+              htmlFor="username"
+              tabIndex={0}
+              className="inputGroup"
+              onClick={() => {
+                document.getElementById("username").focus();
+              }}
+            >
               <FontAwesomeIcon size="lg" className="azul" icon={faUser} />
               <input
+                id="username"
                 type="text"
                 placeholder="Introduza o nome de utilizador"
                 name="username"
@@ -116,9 +124,16 @@ function Register() {
 
           <div>
             <label htmlFor="email">Email</label>
-            <div tabIndex={1} className="inputGroup">
+            <div
+              tabIndex={1}
+              className="inputGroup"
+              onClick={() => {
+                document.getElementById("email").focus();
+              }}
+            >
               <FontAwesomeIcon size="lg" className="azul" icon={faEnvelope} />
               <input
+                id="email"
                 type="email"
                 placeholder="Introduza o seu email"
                 name="email"
@@ -129,9 +144,16 @@ function Register() {
 
           <div>
             <label htmlFor="password">Palavra-passe</label>
-            <div tabIndex={2} className="inputGroup">
+            <div
+              tabIndex={2}
+              className="inputGroup"
+              onClick={() => {
+                document.getElementById("password").focus();
+              }}
+            >
               <FontAwesomeIcon size="lg" className="azul" icon={faUnlock} />
               <input
+                id="password"
                 type="password"
                 placeholder="Introduza a sua palavra-passe"
                 name="password"
@@ -141,9 +163,16 @@ function Register() {
           </div>
           <div>
             <label htmlFor="confirmPassword">Confirmar Palavra-passe</label>
-            <div tabIndex={3} className="inputGroup">
+            <div
+              tabIndex={3}
+              className="inputGroup"
+              onClick={() => {
+                document.getElementById("confirmPassword").focus();
+              }}
+            >
               <FontAwesomeIcon size="lg" className="azul" icon={faLock} />
               <input
+                id="confirmPassword"
                 type="password"
                 placeholder="Introduza a sua palavra-passe"
                 name="confirmPassword"

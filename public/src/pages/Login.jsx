@@ -78,9 +78,16 @@ function Login() {
           </div>
           <div>
             <label htmlFor="username">Nome de utilizador</label>
-            <div tabIndex={0} className="inputGroup">
+            <div
+              tabIndex={0}
+              className="inputGroup"
+              onClick={() => {
+                document.getElementById("username").focus();
+              }}
+            >
               <FontAwesomeIcon size="lg" className="azul" icon={faUser} />
               <input
+                id="username"
                 type="text"
                 placeholder="Introduza o nome de utilizador"
                 name="username"
@@ -91,9 +98,16 @@ function Login() {
 
           <div>
             <label htmlFor="password">Palavra-passe</label>
-            <div tabIndex={2} className="inputGroup">
+            <div
+              tabIndex={2}
+              className="inputGroup"
+              onClick={() => {
+                document.getElementById("password").focus();
+              }}
+            >
               <FontAwesomeIcon size="lg" className="azul" icon={faLock} />
               <input
+                id="password"
                 type="password"
                 placeholder="Introduza a sua palavra-passe"
                 name="password"
