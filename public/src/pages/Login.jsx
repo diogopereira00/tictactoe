@@ -31,7 +31,7 @@ function Login() {
     password: "",
   });
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (handleValidation()) {
       console.log("in validation", loginRoute);
@@ -47,10 +47,11 @@ function Login() {
       }
       if (data.status === false) {
         toast.error(data.msg, toastOptions);
+        document.getElementById("password").value = "";
       }
     }
   };
-  const handleChange = event => {
+  const handleChange = (event) => {
     setValues({ ...values, [event.target.name]: event.target.value });
   };
 
@@ -58,10 +59,7 @@ function Login() {
   const handleValidation = () => {
     const { password, username } = values;
     if (username === "" || password === "") {
-      toast.warning(
-        "Precisa de introduzir um username e uma password",
-        toastOptions
-      );
+      toast.warning("Precisa de introduzir um username e uma password", toastOptions);
       return false;
     }
 
@@ -71,7 +69,7 @@ function Login() {
   return (
     <>
       <FormContainer>
-        <form autoComplete="off" onSubmit={event => handleSubmit(event)}>
+        <form autoComplete="off" onSubmit={(event) => handleSubmit(event)}>
           <div className="brand">
             <img src={Logo} alt="" />
             <h1>TicTacToe</h1>
@@ -91,7 +89,7 @@ function Login() {
                 type="text"
                 placeholder="Introduza o nome de utilizador"
                 name="username"
-                onChange={e => handleChange(e)}
+                onChange={(e) => handleChange(e)}
               />
             </div>
           </div>
@@ -111,7 +109,7 @@ function Login() {
                 type="password"
                 placeholder="Introduza a sua palavra-passe"
                 name="password"
-                onChange={e => handleChange(e)}
+                onChange={(e) => handleChange(e)}
               />
             </div>
           </div>
