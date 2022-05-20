@@ -3,8 +3,10 @@ import React, { useEffect, useState } from "react";
 import Loader from "../components/Loader";
 import { getCurrentUserRoute } from "../utils/APIRoutes";
 import { useNavigate } from "react-router-dom";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
-import { Buffer } from "buffer";
+import Nav from "../components/Navbar";
+import ShowGames from "../components/ShowGames";
 
 export default function Chat() {
   const [isLoading, setIsLoading] = useState(true);
@@ -25,20 +27,19 @@ export default function Chat() {
     }
     fetchData();
   }, []);
+  const colors = {
+    brand: {
+      900: "#1a365d",
+      800: "#153e75",
+      700: "#2a69ac",
+    },
+  };
+  const theme = extendTheme({ colors });
 
   return (
-    <>
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <>
-          {" "}
-          <div>{user.username}</div>
-          <Loader />
-          {console.log(user)}
-          <img src={user.image} alt="teste" />
-        </>
-      )}
-    </>
+    <ChakraProvider theme={theme}>
+      <Nav image={user.image} username={user.username}></Nav>
+      {isLoading ? <Loader /> : <ShowGames />}
+    </ChakraProvider>
   );
 }
