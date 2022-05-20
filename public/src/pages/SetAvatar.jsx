@@ -83,7 +83,7 @@ export default function SetAvatar() {
       const data = [];
       const userLS = JSON.parse(localStorage.getItem("user"));
       const dados = await axios.get(`${getCurrentUserRoute}/${userLS._id}`);
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < 3; i++) {
         const image = await axios.get(`${api}/${Math.round(Math.random() * 1000)}`);
         console.log(image);
 
