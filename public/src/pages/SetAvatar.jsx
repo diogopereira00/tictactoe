@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
 import axios from "axios";
 import { Buffer } from "buffer";
-import { setAvatarRoute } from "../utils/APIRoutes";
+import { setAvatarRoute, getCurrentUserRoute } from "../utils/APIRoutes";
 import Loader from "../components/Loader";
 
 export default function SetAvatar() {
@@ -18,6 +18,8 @@ export default function SetAvatar() {
   const [avatars, setAvatars] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedAvatar, setSelectedAvatar] = useState(undefined);
+  const [user, setUser] = useState([]);
+
   const toastOptions = {
     position: "bottom-right",
     autoClose: 5000,
@@ -75,7 +77,12 @@ export default function SetAvatar() {
   };
   useEffect(() => {
     async function fetchData() {
+      if (!localStorage.getItem("user")) {
+        navigate("/login");
+      }
       const data = [];
+      const userLS = JSON.parse(localStorage.getItem("user"));
+      const dados = await axios.get(`${getCurrentUserRoute}/${userLS._id}`);
       for (let i = 0; i < 2; i++) {
         const image = await axios.get(`${api}/${Math.round(Math.random() * 1000)}`);
         console.log(image);
@@ -85,8 +92,8 @@ export default function SetAvatar() {
         data.push("data:image/svg+xml;base64," + buffer.toString("base64"));
       }
       data.push(baseImage);
-      console.log(data);
       setAvatars(data);
+      setUser(dados.data);
       setIsLoading(false);
     }
     fetchData();
@@ -102,7 +109,7 @@ export default function SetAvatar() {
       ) : (
         <Container>
           <div className="title-container">
-            <h1>Seleciona uma imagem de perfil</h1>
+            <h1>Olá {user.username}, seleciona uma foto de perfil !</h1>
           </div>
           <div className="avatars">
             {avatars.map((avatar, index) => {

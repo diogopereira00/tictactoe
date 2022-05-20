@@ -1,22 +1,25 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Loader from "../components/Loader";
-import { getImageRoute } from "../utils/APIRoutes";
+import { getCurrentUserRoute } from "../utils/APIRoutes";
+import { useNavigate } from "react-router-dom";
+
 import { Buffer } from "buffer";
 
 export default function Chat() {
   const [isLoading, setIsLoading] = useState(true);
-  const [items, setItems] = useState([]);
-  const [currentUser, setCurrentUser] = useState();
+  const [user, setUser] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchData() {
-      const user = JSON.parse(localStorage.getItem("user"));
-
-      setCurrentUser(user);
-      const data = await axios.get(`${getImageRoute}/${user._id}`);
+      if (!localStorage.getItem("user")) {
+        navigate("/login");
+      }
+      const userLS = JSON.parse(localStorage.getItem("user"));
+      const data = await axios.get(`${getCurrentUserRoute}/${userLS._id}`);
       console.log("dados user : " + data.image);
-      setItems(data);
+      setUser(data.data);
       console.log("user:" + user._id);
       setIsLoading(false);
     }
@@ -30,10 +33,10 @@ export default function Chat() {
       ) : (
         <>
           {" "}
-          <div>Chat</div>
+          <div>{user.username}</div>
           <Loader />
-          {console.log(items)}
-          <img src={items.data.image} alt="teste" />
+          {console.log(user)}
+          <img src={user.image} alt="teste" />
         </>
       )}
     </>
