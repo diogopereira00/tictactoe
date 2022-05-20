@@ -48,9 +48,9 @@ module.exports.getCurrentUser = async (req, res, next) => {
 };
 module.exports.login = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
     if (!user) {
       return res.json({
         msg: "Nome de utilizador ou palavra-passe incorretos",

@@ -27,7 +27,7 @@ function Login() {
   }, []);
 
   const [values, setValues] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -35,9 +35,10 @@ function Login() {
     event.preventDefault();
     if (handleValidation()) {
       console.log("in validation", loginRoute);
-      const { password, username } = values;
+      let { password, email } = values;
+      email = email.toLowerCase();
       const { data } = await axios.post(loginRoute, {
-        username,
+        email,
         password,
       });
       if (data.status === true) {
@@ -57,9 +58,9 @@ function Login() {
 
   // MUDAR VALIDAÇOES
   const handleValidation = () => {
-    const { password, username } = values;
-    if (username === "" || password === "") {
-      toast.warning("Precisa de introduzir um username e uma password", toastOptions);
+    const { password, email } = values;
+    if (email === "" || password === "") {
+      toast.warning("Precisa de introduzir um email e uma password", toastOptions);
       return false;
     }
 
@@ -75,20 +76,20 @@ function Login() {
             <h1>TicTacToe</h1>
           </div>
           <div>
-            <label htmlFor="username">Nome de utilizador</label>
+            <label htmlFor="email">Email</label>
             <div
               tabIndex={0}
               className="inputGroup"
               onClick={() => {
-                document.getElementById("username").focus();
+                document.getElementById("email").focus();
               }}
             >
               <FontAwesomeIcon size="lg" className="azul" icon={faUser} />
               <input
-                id="username"
-                type="text"
-                placeholder="Introduza o nome de utilizador"
-                name="username"
+                id="email"
+                type="email"
+                placeholder="Introduza o seu email"
+                name="email"
                 onChange={(e) => handleChange(e)}
               />
             </div>

@@ -8,12 +8,7 @@ import axios from "axios";
 import { registerRoute } from "../utils/APIRoutes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import {
-  faUser,
-  faEnvelope,
-  faLock,
-  faUnlock,
-} from "@fortawesome/free-solid-svg-icons";
+import { faUser, faEnvelope, faLock, faUnlock } from "@fortawesome/free-solid-svg-icons";
 
 function Register() {
   const navigate = useNavigate();
@@ -38,12 +33,13 @@ function Register() {
     confirmPassword: "",
   });
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     //faz a validação
     if (handleValidation()) {
       console.log("in validation", registerRoute);
-      const { password, username, email } = values;
+      let { password, username, email } = values;
+      email = email.toLowerCase();
       const { data } = await axios.post(registerRoute, {
         username,
         email,
@@ -60,7 +56,7 @@ function Register() {
       }
     }
   };
-  const handleChange = event => {
+  const handleChange = (event) => {
     setValues({ ...values, [event.target.name]: event.target.value });
   };
 
@@ -68,22 +64,13 @@ function Register() {
   const handleValidation = () => {
     const { password, confirmPassword, username, email } = values;
     if (password !== confirmPassword) {
-      toast.warning(
-        "A palavra-passe não coincide com o confirmar palavra-passe.",
-        toastOptions
-      );
+      toast.warning("A palavra-passe não coincide com o confirmar palavra-passe.", toastOptions);
       return false;
     } else if (username.length < 3) {
-      toast.warning(
-        "O username tem de ter mais de 3 caracteres.",
-        toastOptions
-      );
+      toast.warning("O username tem de ter mais de 3 caracteres.", toastOptions);
       return false;
     } else if (password.length < 2) {
-      toast.warning(
-        "A palavra passe deve ter mais do que 8 caracteres.",
-        toastOptions
-      );
+      toast.warning("A palavra passe deve ter mais do que 8 caracteres.", toastOptions);
       return false;
     } else if (email === "") {
       toast.warning("Email is required.", toastOptions);
@@ -96,7 +83,7 @@ function Register() {
   return (
     <>
       <FormContainer>
-        <form autoComplete="off" onSubmit={event => handleSubmit(event)}>
+        <form autoComplete="off" onSubmit={(event) => handleSubmit(event)}>
           <div className="brand">
             <img src={Logo} alt="" />
             <h1>TicTacToe</h1>
@@ -117,7 +104,7 @@ function Register() {
                 type="text"
                 placeholder="Introduza o nome de utilizador"
                 name="username"
-                onChange={e => handleChange(e)}
+                onChange={(e) => handleChange(e)}
               />
             </div>
           </div>
@@ -137,7 +124,7 @@ function Register() {
                 type="email"
                 placeholder="Introduza o seu email"
                 name="email"
-                onChange={e => handleChange(e)}
+                onChange={(e) => handleChange(e)}
               />
             </div>
           </div>
@@ -157,7 +144,7 @@ function Register() {
                 type="password"
                 placeholder="Introduza a sua palavra-passe"
                 name="password"
-                onChange={e => handleChange(e)}
+                onChange={(e) => handleChange(e)}
               />
             </div>
           </div>
@@ -176,7 +163,7 @@ function Register() {
                 type="password"
                 placeholder="Introduza a sua palavra-passe"
                 name="confirmPassword"
-                onChange={e => handleChange(e)}
+                onChange={(e) => handleChange(e)}
               />
             </div>
           </div>
