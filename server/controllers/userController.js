@@ -1,5 +1,6 @@
 const User = require("../model/userModel");
 const bcrypt = require("bcrypt");
+const { use } = require("../routes/userRoutes");
 
 module.exports.register = async (req, res, next) => {
   try {
@@ -27,14 +28,19 @@ module.exports.register = async (req, res, next) => {
   }
 };
 //mudar esta funçao para ir buscar todos os dados do utilizador
-module.exports.getImage = async (req, res, next) => {
+module.exports.getCurrentUser = async (req, res, next) => {
   try {
     const id = req.params.id;
     console.log("id " + id);
     const user = await User.findById(id);
     console.log(user.username);
     return res.json({
+      username: user.username,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      password: user.password,
       image: user.avatarImage,
+      id: user._id,
     });
   } catch (ex) {
     next(ex);
