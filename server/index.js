@@ -3,7 +3,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const userRoutes = require("./routes/userRoutes");
-
+const { Server } = require("socket.io");
+const http = require("http");
 const app = express();
 require("dotenv").config();
 app.use(
@@ -32,6 +33,35 @@ mongoose
     console.log(err.message);
   });
 
-const server = app.listen(process.env.PORT, () => {
+const server = http.createServer(app);
+
+const socket = require("socket.io");
+const io = socket(server, {
+  cors: {
+    origin: "http://localhost:3000",
+  },
+});
+
+io.on("connection", (socket) => {
+  socket.on("reqTurn", (data) => {
+    const room = JSON.parse(data).room;
+    io.to(room).emit("playerTurn", data);
+  });
+
+  socket.on("create", (room) => {
+    socket.join(room);
+  });
+
+  socket.on("join", (room) => {
+    socket.join(room);
+    io.to(room).emit("opponent_joined");
+  });
+
+  socket.on("reqRestart", (data) => {
+    const room = JSON.parse(data).room;
+    io.to(room).emit("restart");
+  });
+});
+server.listen(process.env.PORT, () => {
   console.log(`Server arrancou na Porta ${process.env.PORT}`);
 });
