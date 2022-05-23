@@ -1,3 +1,4 @@
+import CurrentGame from "../components/CurrentGame";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Loader from "../components/Loader";
@@ -5,9 +6,7 @@ import { getCurrentUserRoute } from "../utils/APIRoutes";
 import { useNavigate } from "react-router-dom";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import Nav from "../components/Navbar";
-import ShowGames from "../components/ShowGames";
-
-export default function Chat() {
+function Game() {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState([]);
   const navigate = useNavigate();
@@ -38,7 +37,9 @@ export default function Chat() {
   return (
     <ChakraProvider theme={theme}>
       <Nav image={user.image} username={user.username}></Nav>
-      {isLoading ? <Loader /> : <ShowGames />}
+      {isLoading ? <Loader /> : <CurrentGame creator={user} />}
     </ChakraProvider>
   );
 }
+
+export default Game;
