@@ -38,7 +38,6 @@ module.exports.getCurrentUser = async (req, res, next) => {
       username: user.username,
       email: user.email,
       isAdmin: user.isAdmin,
-      password: user.password,
       image: user.avatarImage,
       id: user._id,
     });
