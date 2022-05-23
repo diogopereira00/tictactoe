@@ -17,17 +17,19 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
+import { useNavigate } from "react-router-dom";
 
 export default function Nav(props) {
+  const navigate = useNavigate();
   const { colorMode, toggleColorMode } = useColorMode();
   return (
     <>
-      <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
+      <Box bg={useColorModeValue("#0a72e7", "gray.900")} px={4} maxH="15vh">
         <Flex h={20} alignItems={"center"} justifyContent={"space-between"}>
           <Box>
             <Flex alignItems={"center"} justifyContent={"space-between"}>
               <Image maxW={14} src={logo} mr={5}></Image>
-              <Heading as="h4" size="lg">
+              <Heading as="h4" size="lg" color="white">
                 TICTACTOE
               </Heading>
             </Flex>
@@ -64,6 +66,9 @@ export default function Nav(props) {
                   </Flex>
 
                   <MenuDivider />
+                  <MenuItem onClick={() => navigate("/setAvatar")}>
+                    <Text fontSize="lg">Mudar o avatar</Text>
+                  </MenuItem>
                   <MenuItem>
                     <Text fontSize="lg">Historico de Partidas</Text>
                   </MenuItem>
