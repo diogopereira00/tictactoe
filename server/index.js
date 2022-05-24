@@ -3,6 +3,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const userRoutes = require("./routes/userRoutes");
+const gameRoutes = require("./routes/gameRoutes");
+
 const { Server } = require("socket.io");
 const http = require("http");
 const app = express();
@@ -16,6 +18,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", userRoutes);
+app.use("/api/games", gameRoutes);
+
 app.use(
   bodyParser.json({
     limit: "50mb",
@@ -48,8 +52,8 @@ io.on("connection", (socket) => {
     io.to(room).emit("playerTurn", data);
   });
 
-  socket.on("create", (room) => {
-    socket.join(room);
+  socket.on("create", (sala) => {
+    socket.join(sala);
   });
 
   socket.on("join", (room) => {

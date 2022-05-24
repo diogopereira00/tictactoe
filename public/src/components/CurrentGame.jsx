@@ -19,6 +19,8 @@ import {
 } from "@chakra-ui/react";
 
 import { RepeatIcon } from "@chakra-ui/icons";
+import axios from "axios";
+import { createGameRoute } from "../utils/APIRoutes";
 const socket = io("http://localhost:5555");
 function CurrentGame(props) {
   const [game, setGame] = useState(Array(9).fill(""));
@@ -96,21 +98,35 @@ function CurrentGame(props) {
   }, [turnData, game, turnNumber, winner, myTurn]);
 
   useEffect(() => {
-    if (paramsRoom) {
-      // means you are player 2
-      setXO("O");
-      socket.emit("join", paramsRoom);
-      setRoom(paramsRoom);
-      setMyTurn(false);
-    } else {
-      // means you are player 1
-      const newRoomName = random();
-      console.log(props.creator);
-      socket.emit("create", newRoomName);
-      setRoom(newRoomName);
-      setMyTurn(true);
+    async function fetchData() {
+      if (paramsRoom) {
+        // means you are player 2
+        setXO("O");
+        socket.emit("join", paramsRoom);
+        setRoom(paramsRoom);
+        setMyTurn(false);
+      } else {
+        // means you are player 1
+        const newRoomName = random();
+
+        const { data } = await axios.post(createGameRoute, {
+          gameID: newRoomName,
+          player1: props.creator.id,
+        });
+        if (data.status === true) {
+          const sala = { player: props.creator, room: newRoomName };
+          console.log(sala);
+          console.log(props.creator);
+          socket.emit("create", newRoomName);
+          setRoom(newRoomName);
+          setMyTurn(true);
+        } else {
+          // fetchData();
+        }
+      }
     }
-  }, [paramsRoom]);
+    fetchData();
+  }, []);
   const colors = {
     brand: {
       900: "#1a365d",
