@@ -2,6 +2,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import "../App.css";
+import user from "../assets/user.png";
 
 import io from "socket.io-client";
 import {
@@ -20,7 +21,8 @@ import {
 
 import { RepeatIcon } from "@chakra-ui/icons";
 import axios from "axios";
-import { createGameRoute } from "../utils/APIRoutes";
+import { createGameRoute, joinRoomRoute } from "../utils/APIRoutes";
+import Scoreboard from "./Scoreboard";
 const socket = io("http://localhost:5555");
 function CurrentGame(props) {
   const [game, setGame] = useState(Array(9).fill(""));
@@ -37,6 +39,15 @@ function CurrentGame(props) {
   const params = new URLSearchParams(location.search);
   const paramsRoom = params.get("room");
   const [room, setRoom] = useState(paramsRoom);
+
+  const [player1ID, setPlayer1ID] = useState([]);
+  const [player2ID, setPlayer2ID] = useState([]);
+
+  const [player1Username, setPlayer1Username] = useState([]);
+  const [player1Avatar, setPlayer1Avatar] = useState([]);
+
+  const [player2Username, setPlayer2Username] = useState([]);
+  const [player2Avatar, setPlayer2Avatar] = useState([]);
 
   const turn = (index) => {
     if (!game[index] && !winner && myTurn && hasOpponent) {
@@ -76,7 +87,11 @@ function CurrentGame(props) {
       restart();
     });
 
-    socket.on("opponent_joined", () => {
+    socket.on("opponent_joined", (player2, player2Avatar, player2ID) => {
+      setPlayer2Username(player2);
+      setPlayer2Avatar(player2Avatar);
+      setPlayer2ID(player2ID);
+
       setHasOpponent(true);
       setShare(false);
     });
@@ -101,10 +116,34 @@ function CurrentGame(props) {
     async function fetchData() {
       if (paramsRoom) {
         // means you are player 2
-        setXO("O");
-        socket.emit("join", paramsRoom);
-        setRoom(paramsRoom);
-        setMyTurn(false);
+        console.log(paramsRoom);
+
+        //verifica o segundo player
+        const { data } = await axios.post(`${joinRoomRoute}/${paramsRoom}`, {
+          player2: props.creator.id,
+        });
+        if (data.status === true) {
+          setPlayer1Username(data.game.player1.username);
+          setPlayer1Avatar(data.game.player1.avatar);
+          setPlayer1ID(data.game.player1.id);
+
+          setPlayer2Username(data.game.player2.username);
+          setPlayer2Avatar(data.game.player2.avatar);
+          setPlayer2ID(data.game.player2.id);
+
+          setXO("O");
+          const sala = {
+            sala: paramsRoom,
+            player2: data.game.player2.username,
+            player2Avatar: data.game.player2.avatar,
+            player2ID: data.game.player2.id,
+          };
+          socket.emit("join", sala);
+          setRoom(paramsRoom);
+          setMyTurn(false);
+        } else {
+          alert(data.msg);
+        }
       } else {
         // means you are player 1
         const newRoomName = random();
@@ -113,20 +152,31 @@ function CurrentGame(props) {
           gameID: newRoomName,
           player1: props.creator.id,
         });
+
         if (data.status === true) {
-          const sala = { player: props.creator, room: newRoomName };
-          console.log(sala);
-          console.log(props.creator);
+          setPlayer1Username(data.game.player1.username);
+          setPlayer1ID(data.game.player1.id);
+          setPlayer2ID("");
+          setPlayer2Username("A aguardar adversario...");
+
+          setPlayer1Avatar(data.game.player1.avatar);
+          setPlayer2Avatar(user);
           socket.emit("create", newRoomName);
           setRoom(newRoomName);
           setMyTurn(true);
         } else {
-          // fetchData();
+          fetchData();
         }
       }
     }
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (room != null) {
+      console.log("sala..." + room);
+    }
+  });
   const colors = {
     brand: {
       900: "#1a365d",
@@ -138,20 +188,24 @@ function CurrentGame(props) {
 
   return (
     <ChakraProvider theme={theme}>
-      <Center mt="15vh">
+      <Center mt="5vh">
         <Container>
           <Text fontSize="3xl" fontWeight="bold" textAlign="center">
             <Badge ml="1" fontSize="0.95em" mb="4px" colorScheme={"blue"}>
               Jogo#{room}
             </Badge>
-            de {props.creator.username}
           </Text>
-
+          <Scoreboard
+            player1={player1Username}
+            player1Avatar={player1Avatar}
+            player2={player2Username}
+            player2Avatar={player2Avatar}
+          ></Scoreboard>
           {winner === false ? (
             <>
               {hasOpponent ? (
                 <Heading as="h3" size="lg" pt="2vh">
-                  É a {myTurn ? "tua vez!" : "vez do adversario!"}
+                  É a vez do {myTurn ? "tua vez!" : "vez do adversario!"}
                 </Heading>
               ) : null}
             </>

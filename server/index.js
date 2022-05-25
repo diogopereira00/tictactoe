@@ -56,9 +56,10 @@ io.on("connection", (socket) => {
     socket.join(sala);
   });
 
-  socket.on("join", (room) => {
-    socket.join(room);
-    io.to(room).emit("opponent_joined");
+  socket.on("join", (sala) => {
+    socket.join(sala.sala);
+    console.log(sala.player2);
+    io.to(sala.sala).emit("opponent_joined", sala.player2, sala.player2Avatar, sala.player2ID);
   });
 
   socket.on("reqRestart", (data) => {
