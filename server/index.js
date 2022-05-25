@@ -42,7 +42,7 @@ const server = http.createServer(app);
 const socket = require("socket.io");
 const io = socket(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "http://192.168.1.96:3000",
   },
 });
 

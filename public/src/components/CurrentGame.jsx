@@ -26,7 +26,7 @@ import { RepeatIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { createGameRoute, joinRoomRoute } from "../utils/APIRoutes";
 import Scoreboard from "./Scoreboard";
-const socket = io("http://localhost:5555");
+const socket = io("http://192.168.1.96:5555");
 function CurrentGame(props) {
   const [game, setGame] = useState(Array(9).fill(""));
   const [turnNumber, setTurnNumber] = useState(0);
