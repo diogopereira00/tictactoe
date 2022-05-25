@@ -17,6 +17,9 @@ import {
   Heading,
   Badge,
   Text,
+  Alert,
+  Spinner,
+  Spacer,
 } from "@chakra-ui/react";
 
 import { RepeatIcon } from "@chakra-ui/icons";
@@ -204,9 +207,39 @@ function CurrentGame(props) {
           {winner === false ? (
             <>
               {hasOpponent ? (
-                <Heading as="h3" size="lg" pt="2vh">
-                  É a vez do {myTurn ? "tua vez!" : "vez do adversario!"}
-                </Heading>
+                <Center>
+                  {props.creator.id === player1ID ? (
+                    <>
+                      <Heading as="h3" size="lg" pt="2vh">
+                        {myTurn ? (
+                          <Alert status="success">{player1Username} é a tua vez</Alert>
+                        ) : (
+                          <>
+                            <Alert status="warning">
+                              <Spinner />
+                              <Spacer /> A espera de {player2Username}...
+                            </Alert>
+                          </>
+                        )}
+                      </Heading>
+                    </>
+                  ) : (
+                    <>
+                      <Heading as="h3" size="lg" pt="2vh">
+                        {myTurn ? (
+                          <Alert status="success">{player2Username} é a tua vez</Alert>
+                        ) : (
+                          <>
+                            <Alert status="warning">
+                              <Spinner />
+                              <Spacer /> A espera de {player1Username}...
+                            </Alert>
+                          </>
+                        )}
+                      </Heading>
+                    </>
+                  )}
+                </Center>
               ) : null}
             </>
           ) : null}
