@@ -21,7 +21,7 @@ function Scoreboard(props) {
       <Spacer />
       <Stack spacing={0} align={"center"} mt="7%">
         <Badge fontSize={24} colorScheme="default">
-          0
+          {props.player1Score}
         </Badge>
       </Stack>
       <Spacer />
@@ -33,7 +33,7 @@ function Scoreboard(props) {
       <Spacer />
       <Stack spacing={0} align={"center"} mt="7%">
         <Badge fontSize={24} colorScheme="default">
-          0
+          {props.player2Score}
         </Badge>
       </Stack>
       <Spacer />

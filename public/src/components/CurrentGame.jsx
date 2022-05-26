@@ -20,9 +20,10 @@ import {
   Alert,
   Spinner,
   Spacer,
+  useToast,
 } from "@chakra-ui/react";
 
-import { RepeatIcon } from "@chakra-ui/icons";
+import { CopyIcon, RepeatIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { createGameRoute, joinRoomRoute } from "../utils/APIRoutes";
 import Scoreboard from "./Scoreboard";
@@ -52,6 +53,12 @@ function CurrentGame(props) {
   const [player2Username, setPlayer2Username] = useState([]);
   const [player2Avatar, setPlayer2Avatar] = useState([]);
 
+  const [player1Score, setPlayer1Score] = useState(0);
+  const [player2Score, setPlayer2Score] = useState(0);
+  const [lastWinner, setLastWinner] = useState("");
+  const [houveEmpate, setHouveEmpate] = useState(false);
+  const toast = useToast();
+
   const turn = (index) => {
     if (!game[index] && !winner && myTurn && hasOpponent) {
       socket.emit("reqTurn", JSON.stringify({ index, value: xo, room }));
@@ -73,11 +80,22 @@ function CurrentGame(props) {
     combinations.forEach((c) => {
       if (game[c[0]] === game[c[1]] && game[c[0]] === game[c[2]] && game[c[0]] !== "") {
         setWinner(true);
+        console.log(player);
+        if (player === "X") {
+          setPlayer1Score(player1Score + 1);
+        } else if (player === "O") {
+          setPlayer2Score(player2Score + 1);
+        }
+        setLastWinner(player);
       }
     });
 
     if (turnNumber === 0) {
-      setMyTurn(xo === "X" ? true : false);
+      if (lastWinner !== "") {
+        setMyTurn(xo === lastWinner ? true : false);
+      } else {
+        setMyTurn(xo === "X" ? true : false);
+      }
     }
   }, [game, turnNumber, xo]);
 
@@ -191,7 +209,7 @@ function CurrentGame(props) {
 
   return (
     <ChakraProvider theme={theme}>
-      <Center mt="5vh">
+      <Center mt="3vh">
         <Container>
           <Text fontSize="3xl" fontWeight="bold" textAlign="center">
             <Badge ml="1" fontSize="0.95em" mb="4px" colorScheme={"blue"}>
@@ -203,129 +221,159 @@ function CurrentGame(props) {
             player1Avatar={player1Avatar}
             player2={player2Username}
             player2Avatar={player2Avatar}
+            player1Score={player1Score}
+            player2Score={player2Score}
           ></Scoreboard>
           {winner === false ? (
             <>
               {hasOpponent ? (
-                <Center>
-                  {props.creator.id === player1ID ? (
-                    <>
-                      <Heading as="h3" size="lg" pt="2vh">
-                        {myTurn ? (
-                          <Alert status="success">{player1Username} é a tua vez</Alert>
-                        ) : (
-                          <>
-                            <Alert status="warning">
-                              <Spinner />
-                              <Spacer /> A espera de {player2Username}...
-                            </Alert>
-                          </>
-                        )}
-                      </Heading>
-                    </>
+                <>
+                  {turnNumber === 9 ? (
+                    ""
                   ) : (
                     <>
-                      <Heading as="h3" size="lg" pt="2vh">
-                        {myTurn ? (
-                          <Alert status="success">{player2Username} é a tua vez</Alert>
+                      <Center>
+                        {props.creator.id === player1ID ? (
+                          <>
+                            <Heading as="h3" size="xl" pt="1vh">
+                              {myTurn ? (
+                                <Alert status="success">{player1Username} é a tua vez</Alert>
+                              ) : (
+                                <>
+                                  <Alert status="warning">
+                                    <Spinner mr="0.5vw" />A espera de {player2Username}
+                                  </Alert>
+                                </>
+                              )}
+                            </Heading>
+                          </>
                         ) : (
                           <>
-                            <Alert status="warning">
-                              <Spinner />
-                              <Spacer /> A espera de {player1Username}...
-                            </Alert>
+                            <Heading as="h3" size="lg" pt="1vh">
+                              {myTurn ? (
+                                <Alert status="success">{player2Username} é a tua vez</Alert>
+                              ) : (
+                                <>
+                                  <Alert status="warning">
+                                    <Spinner mr="0.5vw" />
+                                    <Spacer /> A espera de {player1Username}...
+                                  </Alert>
+                                </>
+                              )}
+                            </Heading>
                           </>
                         )}
-                      </Heading>
+                      </Center>
                     </>
                   )}
-                </Center>
+                </>
               ) : null}
             </>
           ) : null}
-          {winner === false ? (
-            <>
-              {hasOpponent ? null : (
-                <Heading as="h4" size="md" pt="2vh">
-                  A espera de adversario...
-                </Heading>
-              )}
-            </>
-          ) : null}
-          <Center pt="2vh">
-            <Box w={"100vw"} textAlign="center">
-              {winner ? (
-                <Heading as="h4" size="lg">
-                  Vencedor: {player}!
-                </Heading>
-              ) : turnNumber === 9 ? (
-                <Heading as="h4" size="lg">
-                  Empate!
-                </Heading>
-              ) : (
-                <br />
-              )}
-              {winner || turnNumber === 9 ? (
-                <Box pt="5" pb="5">
+          <>
+            {hasOpponent ? null : (
+              <>
+                <Flex pt={5}>
                   <Button
-                    leftIcon={<RepeatIcon />}
-                    onClick={sendRestart}
-                    w="80%"
-                    colorScheme="linkedin"
+                    onClick={() => {
+                      setShare(!share);
+                      var c = document.getElementById("inputgame");
+                      c.select();
+                      document.execCommand("copy");
+                      window.getSelection().removeAllRanges();
+                      toast({
+                        title: "Link copiado",
+                        position: "bottom",
+                        description: "Já podes partilhar o link!",
+                        status: "info",
+                        duration: 1500,
+                        isClosable: true,
+                      });
+                      c.selected = false;
+                    }}
+                    w={"full"}
+                    bg="#048918"
+                    color={"white"}
                     rounded={"md"}
+                    maxW="30%"
                     _hover={{
                       transform: "translateY(-2px)",
                       boxShadow: "lg",
                     }}
+                    mr={2}
                     fontSize={22}
                   >
-                    Repetir
+                    <CopyIcon /> Partilhar
                   </Button>
-                </Box>
-              ) : null}
-            </Box>
-          </Center>
-
-          <Flex>
-            <Area index={0} turn={turn} value={game[0]} />
-            <Area index={1} turn={turn} value={game[1]} />
-            <Area index={2} turn={turn} value={game[2]} />
-          </Flex>
-          <Flex>
-            <Area index={3} turn={turn} value={game[3]} />
-            <Area index={4} turn={turn} value={game[4]} />
-            <Area index={5} turn={turn} value={game[5]} />
-          </Flex>
-          <Flex>
-            <Area index={6} turn={turn} value={game[6]} />
-            <Area index={7} turn={turn} value={game[7]} />
-            <Area index={8} turn={turn} value={game[8]} />
-          </Flex>
-          <Flex pb={5} pt={5}>
-            <Button
-              onClick={() => setShare(!share)}
-              w={"full"}
-              bg="#048918"
-              color={"white"}
-              rounded={"md"}
-              maxW="30%"
-              _hover={{
-                transform: "translateY(-2px)",
-                boxShadow: "lg",
-              }}
-              mr={2}
-              fontSize={22}
-            >
-              Partilhar
-            </Button>
-            {share ? (
-              <>
-                <Input type="text" value={`${window.location.href}?room=${room}`} readOnly />
+                  <>
+                    <Input
+                      id="inputgame"
+                      type="text"
+                      value={`${window.location.href}?room=${room}`}
+                      readOnly
+                    />
+                  </>
+                </Flex>
               </>
-            ) : (
-              <Input type="text" value={``} readOnly />
             )}
-          </Flex>
+          </>
+          <Box textAlign="center">
+            {winner ? (
+              <Center>
+                <Heading as="h3" size="lg" pt="1vh">
+                  <>
+                    {player === "X" ? (
+                      <Alert status="success">Vencedor: {player1Username}!</Alert>
+                    ) : (
+                      <Alert status="success">Vencedor: {player2Username}!</Alert>
+                    )}
+                  </>
+                  {/* Vencedor: {player}! */}
+                </Heading>
+              </Center>
+            ) : turnNumber === 9 ? (
+              <Center>
+                <Heading as="h3" size="lg" pt="1vh">
+                  <Alert status="warning">Empate!</Alert>
+                </Heading>
+              </Center>
+            ) : null}
+            {winner || turnNumber === 9 ? (
+              <Box pt="5">
+                <Button
+                  leftIcon={<RepeatIcon />}
+                  onClick={sendRestart}
+                  colorScheme="blue"
+                  rounded={"md"}
+                  _hover={{
+                    transform: "translateY(-2px)",
+                    boxShadow: "lg",
+                  }}
+                  fontSize={22}
+                  fontWeight="bold"
+                >
+                  Jogar novamente
+                </Button>
+              </Box>
+            ) : null}
+          </Box>
+          <Box pt={6} pb={5}>
+            <Flex>
+              <Area index={0} turn={turn} value={game[0]} />
+              <Area index={1} turn={turn} value={game[1]} />
+              <Area index={2} turn={turn} value={game[2]} />
+            </Flex>
+            <Flex>
+              <Area index={3} turn={turn} value={game[3]} />
+              <Area index={4} turn={turn} value={game[4]} />
+              <Area index={5} turn={turn} value={game[5]} />
+            </Flex>
+            <Flex>
+              <Area index={6} turn={turn} value={game[6]} />
+              <Area index={7} turn={turn} value={game[7]} />
+              <Area index={8} turn={turn} value={game[8]} />
+            </Flex>
+          </Box>
         </Container>
       </Center>
     </ChakraProvider>
