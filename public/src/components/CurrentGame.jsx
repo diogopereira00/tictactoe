@@ -55,7 +55,7 @@ function CurrentGame(props) {
 
   const [player1Score, setPlayer1Score] = useState(0);
   const [player2Score, setPlayer2Score] = useState(0);
-  const [lastWinner, setLastWinner] = useState("");
+  const [lastWinner, setLastWinner] = useState("X");
   const [houveEmpate, setHouveEmpate] = useState(false);
   const toast = useToast();
 
@@ -80,6 +80,7 @@ function CurrentGame(props) {
     combinations.forEach((c) => {
       if (game[c[0]] === game[c[1]] && game[c[0]] === game[c[2]] && game[c[0]] !== "") {
         setWinner(true);
+        setHouveEmpate(false);
         console.log(player);
         if (player === "X") {
           setPlayer1Score(player1Score + 1);
@@ -87,15 +88,26 @@ function CurrentGame(props) {
           setPlayer2Score(player2Score + 1);
         }
         setLastWinner(player);
+      } else if (turnNumber === 9) {
+        setHouveEmpate(true);
       }
     });
 
     if (turnNumber === 0) {
-      if (lastWinner !== "") {
-        setMyTurn(xo === lastWinner ? true : false);
+      console.log("houve empate " + houveEmpate);
+      if (houveEmpate) {
+        setMyTurn(xo === lastWinner ? false : true);
+        setLastWinner(lastWinner === "X" ? "O" : "X");
       } else {
-        setMyTurn(xo === "X" ? true : false);
+        setMyTurn(xo === lastWinner ? true : false);
       }
+      //  else {
+      //   if (houveEmpate) {
+      //     setMyTurn(xo === "X" ? false : true);
+      //   } else {
+      //     setMyTurn(xo === "X" ? true : false);
+      //   }
+      // }
     }
   }, [game, turnNumber, xo]);
 
