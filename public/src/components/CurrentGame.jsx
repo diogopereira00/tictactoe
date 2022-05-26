@@ -78,6 +78,7 @@ function CurrentGame(props) {
 
   useEffect(() => {
     combinations.forEach((c) => {
+      //verifica em cada jogada se há vencedor
       if (game[c[0]] === game[c[1]] && game[c[0]] === game[c[2]] && game[c[0]] !== "") {
         setWinner(true);
         setHouveEmpate(false);
@@ -88,13 +89,15 @@ function CurrentGame(props) {
           setPlayer2Score(player2Score + 1);
         }
         setLastWinner(player);
-      } else if (turnNumber === 9) {
+      }
+      //se nao houver vencedor e se for a jogada 9 entao
+      else if (turnNumber === 9) {
         setHouveEmpate(true);
       }
     });
-
+    //se for a jogada 0
     if (turnNumber === 0) {
-      console.log("houve empate " + houveEmpate);
+      //verifica se houve empate
       if (houveEmpate) {
         setMyTurn(xo === lastWinner ? false : true);
         setLastWinner(lastWinner === "X" ? "O" : "X");
@@ -180,12 +183,11 @@ function CurrentGame(props) {
       } else {
         // means you are player 1
         const newRoomName = random();
-
+        //verificar se o player ja tem um jogo aberto, se tiver entra nesse
         const { data } = await axios.post(createGameRoute, {
           gameID: newRoomName,
           player1: props.creator.id,
         });
-
         if (data.status === true) {
           setPlayer1Username(data.game.player1.username);
           setPlayer1ID(data.game.player1.id);
