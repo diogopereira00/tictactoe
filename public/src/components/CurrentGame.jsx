@@ -27,8 +27,10 @@ import { CopyIcon, RepeatIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { createGameRoute, joinRoomRoute } from "../utils/APIRoutes";
 import Scoreboard from "./Scoreboard";
-const socket = io("http://192.168.1.96:5555");
+import socket from "../context/socket";
 function CurrentGame(props) {
+  socket.emit("connectUser", props.creator.username, props.creator.id);
+
   const [game, setGame] = useState(Array(9).fill(""));
   const [turnNumber, setTurnNumber] = useState(0);
   const [myTurn, setMyTurn] = useState(true);

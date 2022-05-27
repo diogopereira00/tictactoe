@@ -45,8 +45,24 @@ const io = socket(server, {
     origin: "http://192.168.1.96:3000",
   },
 });
-
+const users = {};
 io.on("connection", (socket) => {
+  socket.once("connectUser", (user) => {
+    console.log(" conectado " + user + " socketID " + socket.id);
+
+    if (Object.values(users).includes(user) === false) {
+      users[socket.id] = user;
+    }
+
+    io.emit("onlineUsers", Object.keys(users).length);
+    socket.username = user;
+    console.log(users);
+  });
+  socket.on("disconnect", () => {
+    console.log(" disconectado " + socket.username + " " + socket.id);
+    delete users[socket.id];
+    io.emit("onlineUsers", Object.keys(users).length);
+  });
   socket.on("reqTurn", (data) => {
     const room = JSON.parse(data).room;
     io.to(room).emit("playerTurn", data);
@@ -58,7 +74,7 @@ io.on("connection", (socket) => {
 
   socket.on("join", (sala) => {
     socket.join(sala.sala);
-    console.log(sala.player2);
+    // console.log(sala.player2);
     io.to(sala.sala).emit("opponent_joined", sala.player2, sala.player2Avatar, sala.player2ID);
   });
 

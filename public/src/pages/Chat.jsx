@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import Nav from "../components/Navbar";
 import ShowGames from "../components/ShowGames";
+import socket from "../context/socket";
+import StatusLobby from "../components/StatusLobby";
 
 export default function Chat() {
   const [isLoading, setIsLoading] = useState(true);
@@ -19,9 +21,8 @@ export default function Chat() {
       }
       const userLS = JSON.parse(localStorage.getItem("user"));
       const data = await axios.get(`${getCurrentUserRoute}/${userLS._id}`);
-      console.log("dados user : " + data.image);
       setUser(data.data);
-      console.log("user:" + user._id);
+      socket.emit("connectUser", userLS.username);
       setIsLoading(false);
     }
     fetchData();
@@ -38,7 +39,13 @@ export default function Chat() {
   return (
     <ChakraProvider theme={theme}>
       <Nav image={user.image} username={user.username}></Nav>
-      {isLoading ? <Loader /> : <ShowGames />}
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <ShowGames />
+        </>
+      )}
     </ChakraProvider>
   );
 }
