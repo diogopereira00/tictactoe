@@ -87,9 +87,9 @@ module.exports.joinRoom = async (req, res, next) => {
 module.exports.getCurrentRoom = async (req, res, next) => {
   try {
     const id = req.params.id;
-    console.log("id " + id);
+    // console.log("id " + id);
     const game = await Game.findOne({ gameID: id });
-    console.log(game.player1);
+    // console.log(game.player1);
     return res.json({
       gameID: game.gameID,
       player1: game.player1,

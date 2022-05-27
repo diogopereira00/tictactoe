@@ -31,9 +31,9 @@ module.exports.register = async (req, res, next) => {
 module.exports.getCurrentUser = async (req, res, next) => {
   try {
     const id = req.params.id;
-    console.log("id " + id);
+    // console.log("id " + id);
     const user = await User.findById(id);
-    console.log(user.username);
+    // console.log(user.username);
     return res.json({
       username: user.username,
       email: user.email,
