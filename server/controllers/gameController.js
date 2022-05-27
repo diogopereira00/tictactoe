@@ -8,24 +8,28 @@ module.exports.create = async (req, res, next) => {
     const { gameID, player1 } = req.body;
     const player1Data = await User.findById(player1);
     const gameIDcheck = await Game.findOne({ gameID });
-    const player1Check = await Game.find({ player1 })
-      .where({ status: "open" })
-      .updateMany({ status: "closed" });
-    // console.log("------player1-----");
-    // console.log(player1Check);
-    // Se ja existirem retorno o erro
+    //verifica se o player1 ja tem um jogo aberto, nem ningem
+    const player1Check = await Game.findOne({ player1 }).where({ status: "open" });
+    var game = "";
 
     if (gameIDcheck) return res.json({ msg: "Erro", status: false });
-    // console.log(req.body);
+    if (player1Check === null) {
+      console.log(player1);
+      game = await Game.create({
+        gameID,
+        player1,
+        player2: "",
+        status: "open",
+      });
+    } else {
+      if (player1Check.player1 === player1) {
+        game = player1Check;
+      } else {
+        return res.json({ msg: "Erro", status: false });
+      }
+    }
+    console.log(game);
 
-    // console.log(req.body);
-
-    const game = await Game.create({
-      gameID,
-      player1,
-      player2: "",
-      status: "open",
-    });
     return res.json({
       status: true,
       game: {
@@ -60,7 +64,10 @@ module.exports.joinRoom = async (req, res, next) => {
 
     const player1Data = await User.findById(roomCheck.player1);
     const player2Data = await User.findById(player2);
-    const game = await Game.findOneAndUpdate({ gameID: id }, { player2: player2 });
+    const game = await Game.findOneAndUpdate(
+      { gameID: id },
+      { player2: player2, status: "running" }
+    );
     // console.log(game.player1);
     return res.json({
       status: true,

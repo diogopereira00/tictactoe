@@ -190,6 +190,7 @@ function CurrentGame(props) {
           gameID: newRoomName,
           player1: props.creator.id,
         });
+        const roomName = data.game.gameID;
         if (data.status === true) {
           setPlayer1Username(data.game.player1.username);
           setPlayer1ID(data.game.player1.id);
@@ -198,8 +199,8 @@ function CurrentGame(props) {
 
           setPlayer1Avatar(data.game.player1.avatar);
           setPlayer2Avatar(user);
-          socket.emit("create", newRoomName);
-          setRoom(newRoomName);
+          socket.emit("create", roomName);
+          setRoom(roomName);
           setMyTurn(true);
         } else {
           fetchData();
