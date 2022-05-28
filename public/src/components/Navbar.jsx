@@ -69,9 +69,8 @@ export default function Nav(props) {
             <Button
               colorScheme="blue"
               onClick={async () => {
-                const { data } = await axios.post(`${leaverGameRoute}/${props.id}`);
-
                 navigate(sairGame);
+                window.location.reload();
               }}
             >
               Sim
@@ -93,9 +92,11 @@ export default function Nav(props) {
                   onOpen();
                 } else {
                   navigate("/");
+                  window.location.reload();
                 }
               } else {
                 navigate("/");
+                window.location.reload();
               }
             }}
             cursor="pointer"

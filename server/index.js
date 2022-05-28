@@ -47,8 +47,8 @@ const io = socket(server, {
 });
 const users = {};
 io.on("connection", (socket) => {
-  socket.once("connectUser", (user) => {
-    console.log(" conectado " + user + " socketID " + socket.id);
+  socket.once("connectUser", (user, idUser) => {
+    console.log(" conectado " + user + "id: " + idUser + " socketID " + socket.id);
 
     if (Object.values(users).includes(user) === false) {
       users[socket.id] = user;
@@ -56,11 +56,22 @@ io.on("connection", (socket) => {
 
     io.emit("onlineUsers", Object.keys(users).length);
     socket.username = user;
+    socket.userID = idUser;
     console.log(users);
   });
   socket.on("disconnect", () => {
-    console.log(" disconectado " + socket.username + " " + socket.id);
+    console.log(
+      "disconectado " +
+        socket.username +
+        " idUser:  " +
+        socket.userID +
+        " " +
+        socket.id +
+        " na sala "
+    );
+
     delete users[socket.id];
+    io.emit("leaverGame", socket.userID);
     io.emit("onlineUsers", Object.keys(users).length);
   });
   socket.on("reqTurn", (data) => {

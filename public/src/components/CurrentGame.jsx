@@ -4,19 +4,26 @@ import { useLocation } from "react-router";
 import "../App.css";
 import user from "../assets/user.png";
 
-import io from "socket.io-client";
 import {
   Box,
+  Flex,
   Button,
+  Heading,
+  Text,
+  Badge,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
   Center,
   Container,
-  Flex,
   ChakraProvider,
   extendTheme,
   Input,
-  Heading,
-  Badge,
-  Text,
   Alert,
   Spinner,
   Spacer,
@@ -25,7 +32,12 @@ import {
 
 import { CopyIcon, RepeatIcon } from "@chakra-ui/icons";
 import axios from "axios";
-import { createGameRoute, joinRoomRoute } from "../utils/APIRoutes";
+import {
+  createGameRoute,
+  getCurrentRoomRoute,
+  joinRoomRoute,
+  leaverGameRoute,
+} from "../utils/APIRoutes";
 import Scoreboard from "./Scoreboard";
 import socket from "../context/socket";
 function CurrentGame(props) {
@@ -61,6 +73,9 @@ function CurrentGame(props) {
   const [houveEmpate, setHouveEmpate] = useState(false);
   const toast = useToast();
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  var testePlayer2 = "";
   const turn = (index) => {
     if (!game[index] && !winner && myTurn && hasOpponent) {
       socket.emit("reqTurn", JSON.stringify({ index, value: xo, room }));
@@ -129,6 +144,8 @@ function CurrentGame(props) {
       setPlayer2Username(player2);
       setPlayer2Avatar(player2Avatar);
       setPlayer2ID(player2ID);
+      testePlayer2 = player2ID;
+      // alert(player2ID);
 
       setHasOpponent(true);
       setShare(false);
@@ -213,8 +230,24 @@ function CurrentGame(props) {
   useEffect(() => {
     if (room != null) {
       console.log("sala..." + room);
+
+      socket.once("leaverGame", async (idUserLeaver) => {
+        const dados = await axios.get(`${getCurrentRoomRoute}/${room}`);
+        console.log(dados);
+        if (idUserLeaver === dados.data.game.player1) {
+          await axios.post(`${leaverGameRoute}/${dados.data.game.player1}`);
+
+          onOpen();
+        }
+        if (idUserLeaver === dados.data.game.player2) {
+          await axios.post(`${leaverGameRoute}/${dados.data.game.player2}`);
+
+          onOpen();
+        }
+      });
     }
   });
+
   const colors = {
     brand: {
       900: "#1a365d",
@@ -226,6 +259,28 @@ function CurrentGame(props) {
 
   return (
     <ChakraProvider theme={theme}>
+      <Modal closeOnOverlayClick={false} isCentered isOpen={isOpen} onClose={onClose} size={"lg"}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            <Text fontSize="2xl" fontWeight="bold" color="yellow.500">
+              Parabéns!
+            </Text>
+          </ModalHeader>
+          <ModalBody>
+            <Text fontSize="xl" fontWeight="bold">
+              Vences-te o jogo! O {player2Username} abandonou a partida.
+            </Text>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" onClick={async () => {}}>
+              Voltar a página Inicial
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       <Center mt="3vh">
         <Container>
           <Text fontSize="3xl" fontWeight="bold" textAlign="center">

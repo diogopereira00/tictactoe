@@ -21,7 +21,7 @@ export default function Chat() {
       const userLS = JSON.parse(localStorage.getItem("user"));
       const data = await axios.get(`${getCurrentUserRoute}/${userLS._id}`);
       setUser(data.data);
-      socket.emit("connectUser", userLS.username);
+      socket.emit("connectUser", userLS.username, userLS._id);
       setIsLoading(false);
     }
     fetchData();

@@ -32,7 +32,7 @@ module.exports.create = async (req, res, next) => {
         return res.json({ msg: "Erro", status: false });
       }
     }
-    console.log(game);
+    // console.log(game);
 
     return res.json({
       status: true,
@@ -101,10 +101,10 @@ module.exports.endGameLeaver = async (req, res, next) => {
     const idLeaver = req.params.id;
     var game = await Game.findOne({ idLeaver }).where({ status: "running" });
 
-    console.log("gameeeeeeeeeee");
-    console.log(game);
+    // console.log("gameeeeeeeeeee");
+    // console.log(game);
     if (game.player1 === idLeaver) {
-      console.log("entrei aqui");
+      // console.log("entrei aqui");
       game = await Game.findOneAndUpdate(
         { gameID: game.gameID },
         { vencedor: game.player2, status: "closed", endTime: new Date() }
@@ -131,10 +131,7 @@ module.exports.getCurrentRoom = async (req, res, next) => {
     const game = await Game.findOne({ gameID: id });
     // console.log(game.player1);
     return res.json({
-      gameID: game.gameID,
-      player1: game.player1,
-      player2: game.player2,
-      status: game.status,
+      game,
     });
   } catch (ex) {
     next(ex);
