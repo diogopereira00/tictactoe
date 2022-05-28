@@ -319,6 +319,7 @@ function CurrentGame(props) {
                     }}
                     mr={2}
                     fontSize={22}
+                    id="partilhar"
                   >
                     <CopyIcon /> Partilhar
                   </Button>

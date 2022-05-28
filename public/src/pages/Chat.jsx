@@ -7,7 +7,6 @@ import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import Nav from "../components/Navbar";
 import ShowGames from "../components/ShowGames";
 import socket from "../context/socket";
-import StatusLobby from "../components/StatusLobby";
 
 export default function Chat() {
   const [isLoading, setIsLoading] = useState(true);

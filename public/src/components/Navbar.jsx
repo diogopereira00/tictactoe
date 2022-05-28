@@ -16,33 +16,82 @@ import {
   Image,
   Text,
   Badge,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
 } from "@chakra-ui/react";
-import { MoonIcon, SunIcon } from "@chakra-ui/icons";
+import { MoonIcon, SunIcon, WarningIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import socket from "../context/socket";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Nav(props) {
   const navigate = useNavigate();
+  const [sairGame, setSairGame] = useState(undefined);
   const { colorMode, toggleColorMode } = useColorMode();
   const [onlineUsers, setOnlineUsers] = useState(0);
 
-  socket.on("onlineUsers", (onlineUsers) => {
-    setOnlineUsers(onlineUsers);
+  useEffect(() => {
+    socket.on("onlineUsers", (onlineUsers) => {
+      setOnlineUsers(onlineUsers);
+    });
   });
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <>
+      <Modal isCentered isOpen={isOpen} onClose={onClose} size={"lg"}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            <Text fontSize="2xl" fontWeight="bold" color="yellow.500">
+              <WarningIcon mb="1" mr="2" />
+              Tens a certeza?
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text fontSize="xl" fontWeight="bold">
+              Se abandonares a partida, vais perder o jogo!{" "}
+            </Text>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button mr={3} onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button
+              colorScheme="blue"
+              onClick={() => {
+                navigate(sairGame);
+              }}
+            >
+              Sim
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       <Box bg={useColorModeValue("#0a72e7", "gray.900")} px={4} maxH="15vh">
         <Flex h={20} alignItems={"center"} justifyContent={"space-between"}>
           <Box
-            onClick={() => {
+            onClick={async () => {
               var currentPage = window.location.href;
               if (currentPage.includes("/game")) {
-                alert(
-                  "Tens a certeza que pretendes sair daqui? Se saires não poderas voltar e perderás o jogo!"
-                );
+                if (document.getElementById("partilhar") === null) {
+                  setSairGame("/");
+                  onOpen();
+                } else {
+                  navigate("/");
+                }
+              } else {
+                navigate("/");
               }
-              navigate("/");
             }}
             cursor="pointer"
           >
@@ -90,7 +139,19 @@ export default function Nav(props) {
                   </Flex>
 
                   <MenuDivider />
-                  <MenuItem onClick={() => navigate("/setAvatar")}>
+                  <MenuItem
+                    onClick={() => {
+                      var currentPage = window.location.href;
+                      if (currentPage.includes("/game")) {
+                        if (document.getElementById("partilhar") === null) {
+                          setSairGame("/setAvatar");
+                          onOpen();
+                        }
+                      } else {
+                        navigate("/setAvatar");
+                      }
+                    }}
+                  >
                     <Text fontSize="lg">Mudar o avatar</Text>
                   </MenuItem>
                   <MenuItem>
