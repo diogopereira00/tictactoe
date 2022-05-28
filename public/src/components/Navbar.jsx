@@ -29,13 +29,14 @@ import { MoonIcon, SunIcon, WarningIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import socket from "../context/socket";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { leaverGameRoute } from "../utils/APIRoutes";
 
 export default function Nav(props) {
   const navigate = useNavigate();
   const [sairGame, setSairGame] = useState(undefined);
   const { colorMode, toggleColorMode } = useColorMode();
   const [onlineUsers, setOnlineUsers] = useState(0);
-
   useEffect(() => {
     socket.on("onlineUsers", (onlineUsers) => {
       setOnlineUsers(onlineUsers);
@@ -67,7 +68,9 @@ export default function Nav(props) {
             </Button>
             <Button
               colorScheme="blue"
-              onClick={() => {
+              onClick={async () => {
+                const { data } = await axios.post(`${leaverGameRoute}/${props.id}`);
+
                 navigate(sairGame);
               }}
             >
@@ -83,8 +86,10 @@ export default function Nav(props) {
             onClick={async () => {
               var currentPage = window.location.href;
               if (currentPage.includes("/game")) {
+                //o jogo ja está a correr se o elemento "partilhar" nao existir
                 if (document.getElementById("partilhar") === null) {
                   setSairGame("/");
+
                   onOpen();
                 } else {
                   navigate("/");

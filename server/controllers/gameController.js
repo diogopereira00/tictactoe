@@ -20,6 +20,10 @@ module.exports.create = async (req, res, next) => {
         player1,
         player2: "",
         status: "open",
+        vencedor: "",
+        melhorde: "",
+        createTime: new Date(),
+        endTime: "",
       });
     } else {
       if (player1Check.player1 === player1) {
@@ -85,6 +89,35 @@ module.exports.joinRoom = async (req, res, next) => {
         },
         status: game.status,
       },
+    });
+  } catch (ex) {
+    next(ex);
+  }
+};
+
+module.exports.endGameLeaver = async (req, res, next) => {
+  try {
+    // console.log("id " + id);
+    const idLeaver = req.params.id;
+    var game = await Game.findOne({ idLeaver }).where({ status: "running" });
+
+    console.log("gameeeeeeeeeee");
+    console.log(game);
+    if (game.player1 === idLeaver) {
+      console.log("entrei aqui");
+      game = await Game.findOneAndUpdate(
+        { gameID: game.gameID },
+        { vencedor: game.player2, status: "closed", endTime: new Date() }
+      );
+    } else {
+      game = await Game.findOneAndUpdate(
+        { gameID: game.gameID },
+        { vencedor: game.player1, status: "closed", endTime: new Date() }
+      );
+    }
+    return res.json({
+      status: true,
+      game,
     });
   } catch (ex) {
     next(ex);

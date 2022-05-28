@@ -36,7 +36,7 @@ function Game() {
 
   return (
     <ChakraProvider theme={theme}>
-      <Nav image={user.image} username={user.username}></Nav>
+      <Nav image={user.image} username={user.username} id={user.id}></Nav>
       {/* nao posso passar o currentUser para o currentGame creater */}
       {isLoading ? <Loader /> : <CurrentGame creator={user} />}
     </ChakraProvider>

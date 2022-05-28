@@ -6,5 +6,6 @@ export const setAvatarRoute = `${host}/api/auth/setAvatar`;
 export const getCurrentUserRoute = `${host}/api/auth/getCurrentUser`;
 export const getCurrentRoomRoute = `${host}/api/games/getCurrentRoom`;
 export const joinRoomRoute = `${host}/api/games/joinRoom`;
+export const leaverGameRoute = `${host}/api/games/leaver`;
 
 export const createGameRoute = `${host}/api/games/create`;

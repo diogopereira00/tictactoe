@@ -37,7 +37,7 @@ export default function Chat() {
 
   return (
     <ChakraProvider theme={theme}>
-      <Nav image={user.image} username={user.username}></Nav>
+      <Nav image={user.image} username={user.username} id={user.id}></Nav>
       {isLoading ? (
         <Loader />
       ) : (
