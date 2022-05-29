@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { loginRoute } from "../utils/APIRoutes";
+import { registerRoute } from "../utils/APIRoutes";
 
 import {
   Box,
@@ -19,18 +19,12 @@ import {
 } from "@chakra-ui/react";
 import { Formik } from "formik";
 import logo from "../assets/logo.png";
-import { EmailIcon, LockIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import * as Yup from "yup";
 import TextField from "../components/TextField";
 import { ToastContainer, toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEnvelope,
-  faLock,
-  faLockOpen,
-  faUnlock,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faLock, faUnlock, faUser } from "@fortawesome/free-solid-svg-icons";
 function Register() {
   const [show, setShow] = React.useState(false);
   const [showConfirmPassoword, setShowConfirmPassoword] = React.useState(false);
@@ -63,20 +57,21 @@ function Register() {
   const theme = extendTheme({ colors });
 
   async function validateUser(values) {
-    console.log("in validation", loginRoute);
-    let { email, password } = values;
+    console.log("in validation", registerRoute);
+    let { password, username, email } = values;
     email = email.toLowerCase();
-    const { data } = await axios.post(loginRoute, {
+    const { data } = await axios.post(registerRoute, {
+      username,
       email,
       password,
     });
+    console.log(data.password);
+    //se os dados tiverem ok guardo a sessão no localStorage e vou para home page
     if (data.status === true) {
-      delete data.password;
       localStorage.setItem("user", JSON.stringify(data.user));
-      navigate("/");
+      navigate("/setAvatar");
     }
     if (data.status === false) {
-      // toast.error(data.msg, toastOptions);
       toast.error(data.msg, toastOptions);
     }
   }
@@ -106,7 +101,8 @@ function Register() {
             // alert(JSON.stringify(values, null, 2));
             validateUser(values);
             console.log(actions);
-            actions.setFieldValue("password", "");
+            // actions.setFieldValue("password", "");
+            // actions.setFieldValue("confirmPassword", "");
           }}
         >
           {(formik) => (
