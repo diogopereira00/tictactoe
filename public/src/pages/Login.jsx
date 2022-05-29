@@ -23,6 +23,8 @@ import { EmailIcon, LockIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import * as Yup from "yup";
 import TextField from "../components/TextField";
 import { ToastContainer, toast } from "react-toastify";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
 
 export default function Login() {
   const [show, setShow] = React.useState(false);
@@ -75,10 +77,8 @@ export default function Login() {
         <Formik
           initialValues={{ email: "", password: "" }}
           validationSchema={Yup.object({
-            password: Yup.string().required("Precisa de introduzir uma palavra-passe"),
-            email: Yup.string()
-              .email("Por favor, introduza um email válido.")
-              .required("Precisa de introduzir um email."),
+            password: Yup.string(),
+            email: Yup.string().email("Por favor, introduza um email válido."),
           })}
           onSubmit={(values, actions) => {
             // alert(JSON.stringify(values, null, 2));
@@ -86,6 +86,7 @@ export default function Login() {
             console.log(actions);
             actions.setFieldValue("password", "");
           }}
+          autoComplete="off"
         >
           {(formik) => (
             <VStack
@@ -117,7 +118,7 @@ export default function Login() {
                     leftElement={
                       <InputLeftElement
                         pointerEvents="none"
-                        children={<EmailIcon fontSize={"1.2em"} color="blue.400" />}
+                        children={<FontAwesomeIcon size="1x" className="azul" icon={faEnvelope} />}
                       />
                     }
                     fontWeight={"medium"}
@@ -129,12 +130,12 @@ export default function Login() {
                   />
 
                   <TextField
-                    label="Palavra-passe"
+                    label="Palavra-Passe"
                     values={formik.values.password}
                     leftElement={
                       <InputLeftElement
                         pointerEvents="none"
-                        children={<LockIcon fontSize={"1.2em"} color="blue.400" />}
+                        children={<FontAwesomeIcon size="1x" className="azul" icon={faLock} />}
                       />
                     }
                     rightElement={

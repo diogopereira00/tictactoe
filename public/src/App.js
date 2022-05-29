@@ -4,8 +4,9 @@ import Chat from "./pages/Chat";
 import Game from "./pages/Game";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import RegisterOLD from "./pages/RegisterOLD";
 import SetAvatar from "./pages/SetAvatar";
-
+import "./App.css";
 export default function App() {
   return (
     <BrowserRouter>
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/setAvatar" element={<SetAvatar />} />
         <Route path="/" element={<Chat />} />
+        <Route path="/register2" element={<RegisterOLD />} />
 
         <Route path="/game" element={<Game />} />
       </Routes>

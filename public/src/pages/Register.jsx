@@ -1,279 +1,252 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import Logo from "../assets/logo.png";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import styled from "styled-components";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { registerRoute } from "../utils/APIRoutes";
+import { loginRoute } from "../utils/APIRoutes";
+
+import {
+  Box,
+  Button,
+  Center,
+  ChakraProvider,
+  extendTheme,
+  Flex,
+  Heading,
+  Image,
+  InputLeftElement,
+  InputRightElement,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import { Formik } from "formik";
+import logo from "../assets/logo.png";
+import { EmailIcon, LockIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import * as Yup from "yup";
+import TextField from "../components/TextField";
+import { ToastContainer, toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { faUser, faEnvelope, faLock, faUnlock } from "@fortawesome/free-solid-svg-icons";
-
+import {
+  faEnvelope,
+  faLock,
+  faLockOpen,
+  faUnlock,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 function Register() {
+  const [show, setShow] = React.useState(false);
+  const [showConfirmPassoword, setShowConfirmPassoword] = React.useState(false);
+
+  const handleClick = () => setShow(!show);
+
+  const handleClickConfirmPassword = () => setShowConfirmPassoword(!showConfirmPassoword);
+
   const navigate = useNavigate();
   const toastOptions = {
-    position: "bottom-right",
-    autoClose: 5000,
-    pauseOnHover: true,
+    position: "bottom-center",
+    autoClose: 3000,
+    closeOnClick: true,
     draggable: true,
     theme: "dark",
   };
-
   useEffect(() => {
     if (localStorage.getItem("user")) {
       navigate("/");
     }
   }, []);
 
-  const [values, setValues] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const colors = {
+    brand: {
+      900: "#1a365d",
+      800: "#153e75",
+      700: "#2a69ac",
+    },
+  };
+  const theme = extendTheme({ colors });
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    //faz a validação
-    if (handleValidation()) {
-      console.log("in validation", registerRoute);
-      let { password, username, email } = values;
-      email = email.toLowerCase();
-      const { data } = await axios.post(registerRoute, {
-        username,
-        email,
-        password,
-      });
-      console.log(data.password);
-      //se os dados tiverem ok guardo a sessão no localStorage e vou para home page
-      if (data.status === true) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        navigate("/setAvatar");
-      }
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions);
-      }
+  async function validateUser(values) {
+    console.log("in validation", loginRoute);
+    let { email, password } = values;
+    email = email.toLowerCase();
+    const { data } = await axios.post(loginRoute, {
+      email,
+      password,
+    });
+    if (data.status === true) {
+      delete data.password;
+      localStorage.setItem("user", JSON.stringify(data.user));
+      navigate("/");
     }
-  };
-  const handleChange = (event) => {
-    setValues({ ...values, [event.target.name]: event.target.value });
-  };
-
-  // MUDAR VALIDAÇOES
-  const handleValidation = () => {
-    const { password, confirmPassword, username, email } = values;
-    if (password !== confirmPassword) {
-      toast.warning("A palavra-passe não coincide com o confirmar palavra-passe.", toastOptions);
-      return false;
-    } else if (username.length < 3) {
-      toast.warning("O username tem de ter mais de 3 caracteres.", toastOptions);
-      return false;
-    } else if (password.length < 2) {
-      toast.warning("A palavra passe deve ter mais do que 8 caracteres.", toastOptions);
-      return false;
-    } else if (email === "") {
-      toast.warning("Email is required.", toastOptions);
-      return false;
+    if (data.status === false) {
+      // toast.error(data.msg, toastOptions);
+      toast.error(data.msg, toastOptions);
     }
-
-    return true;
-  };
-
+  }
   return (
     <>
-      <FormContainer>
-        <form autoComplete="off" onSubmit={(event) => handleSubmit(event)}>
-          <div className="brand">
-            <img src={Logo} alt="" />
-            <h1>TicTacToe</h1>
-          </div>
-          <div>
-            <label htmlFor="username">Nome de utilizador</label>
-            <div
-              htmlFor="username"
-              tabIndex={0}
-              className="inputGroup"
-              onClick={() => {
-                document.getElementById("username").focus();
-              }}
-            >
-              <FontAwesomeIcon size="lg" className="azul" icon={faUser} />
-              <input
-                id="username"
-                type="text"
-                placeholder="Introduza o nome de utilizador"
-                name="username"
-                onChange={(e) => handleChange(e)}
-              />
-            </div>
-          </div>
+      <ChakraProvider theme={theme}>
+        <Formik
+          initialValues={{ email: "", password: "", username: "", confirmPassword: "" }}
+          validationSchema={Yup.object({
+            username: Yup.string().min(
+              6,
+              "O seu nome de utilizador tem de ter pelo menos 6 caracteres"
+            ),
+            password: Yup.string().matches(
+              /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+              "Precisa de ter pelo menos 8 caracteres, uma maiuscula, uma minuscula, um numero e um caracter especial"
+            ),
+            confirmPassword: Yup.string().oneOf(
+              [Yup.ref("password"), null],
+              "As palavras-passes não coincidem"
+            ),
+            // .equals("password", "As suas palavras-passes não coincidem"),
 
-          <div>
-            <label htmlFor="email">Email</label>
-            <div
-              tabIndex={1}
-              className="inputGroup"
-              onClick={() => {
-                document.getElementById("email").focus();
-              }}
+            email: Yup.string().email("Por favor, introduza um email válido."),
+          })}
+          onSubmit={(values, actions) => {
+            // alert(JSON.stringify(values, null, 2));
+            validateUser(values);
+            console.log(actions);
+            actions.setFieldValue("password", "");
+          }}
+        >
+          {(formik) => (
+            <VStack
+              as="form"
+              mx="auto"
+              w={{ base: "90%", md: 500 }}
+              h="100vh"
+              justifyContent="center"
+              onSubmit={formik.handleSubmit}
+              autoComplete="off"
             >
-              <FontAwesomeIcon size="lg" className="azul" icon={faEnvelope} />
-              <input
-                id="email"
-                type="email"
-                placeholder="Introduza o seu email"
-                name="email"
-                onChange={(e) => handleChange(e)}
-              />
-            </div>
-          </div>
+              <Box
+                width="28rem"
+                backgroundColor="#00000076"
+                borderRadius="2rem"
+                padding="3rem 3rem"
+              >
+                <Center pb={7}>
+                  <Flex>
+                    <Image maxH={"5rem"} src={logo} mr={5}></Image>
+                    <Heading as="h4" size="xl" color="white" alignSelf={"center"}>
+                      TICTACTOE
+                    </Heading>
+                  </Flex>
+                </Center>
+                <Box pb={7}>
+                  <TextField
+                    label="Nome de Utilizador"
+                    values={formik.values.username}
+                    leftElement={
+                      <InputLeftElement
+                        pointerEvents="none"
+                        children={<FontAwesomeIcon size="1x" className="azul" icon={faUser} />}
+                      />
+                    }
+                    fontWeight={"medium"}
+                    id="username"
+                    placeholder="Introduza o seu nome de utilizador"
+                    type="username"
+                    tabIndex={1}
+                    name="username"
+                  />
 
-          <div>
-            <label htmlFor="password">Palavra-passe</label>
-            <div
-              tabIndex={2}
-              className="inputGroup"
-              onClick={() => {
-                document.getElementById("password").focus();
-              }}
-            >
-              <FontAwesomeIcon size="lg" className="azul" icon={faUnlock} />
-              <input
-                id="password"
-                type="password"
-                placeholder="Introduza a sua palavra-passe"
-                name="password"
-                onChange={(e) => handleChange(e)}
-              />
-            </div>
-          </div>
-          <div>
-            <label htmlFor="confirmPassword">Confirmar Palavra-passe</label>
-            <div
-              tabIndex={3}
-              className="inputGroup"
-              onClick={() => {
-                document.getElementById("confirmPassword").focus();
-              }}
-            >
-              <FontAwesomeIcon size="lg" className="azul" icon={faLock} />
-              <input
-                id="confirmPassword"
-                type="password"
-                placeholder="Introduza a sua palavra-passe"
-                name="confirmPassword"
-                onChange={(e) => handleChange(e)}
-              />
-            </div>
-          </div>
+                  <TextField
+                    label="Email"
+                    values={formik.values.email}
+                    leftElement={
+                      <InputLeftElement
+                        pointerEvents="none"
+                        children={<FontAwesomeIcon size="1x" className="azul" icon={faEnvelope} />}
+                      />
+                    }
+                    fontWeight={"medium"}
+                    id="email"
+                    placeholder="Introduza o seu email"
+                    type="email"
+                    tabIndex={1}
+                    name="email"
+                  />
 
-          <button type="submit">Criar Conta</button>
-          <span className="centerAlready">
-            Já tens conta?
-            <Link to="/login">Login </Link>
-          </span>
-        </form>
-      </FormContainer>
+                  <TextField
+                    label="Palavra-Passe"
+                    values={formik.values.password}
+                    leftElement={
+                      <InputLeftElement
+                        pointerEvents="none"
+                        children={<FontAwesomeIcon size="1x" className="azul" icon={faUnlock} />}
+                      />
+                    }
+                    rightElement={
+                      <InputRightElement width="4rem">
+                        <Button size="sm" onClick={handleClick}>
+                          {show ? <ViewOffIcon /> : <ViewIcon fontSize={"1.2em"} />}
+                        </Button>
+                      </InputRightElement>
+                    }
+                    fontWeight={"medium"}
+                    id="password"
+                    placeholder="Introduza a sua palavra-passe"
+                    type={show ? "text" : "password"}
+                    tabIndex={1}
+                    name="password"
+                  />
+
+                  <TextField
+                    label="Confirmar Palavra-Passe"
+                    values={formik.values.password}
+                    leftElement={
+                      <InputLeftElement
+                        pointerEvents="none"
+                        children={<FontAwesomeIcon size="md" className="azul" icon={faLock} />}
+                      />
+                    }
+                    rightElement={
+                      <InputRightElement width="4rem">
+                        <Button size="sm" onClick={handleClickConfirmPassword}>
+                          {showConfirmPassoword ? <ViewOffIcon /> : <ViewIcon fontSize={"1.2em"} />}
+                        </Button>
+                      </InputRightElement>
+                    }
+                    fontWeight={"medium"}
+                    id="confirmPassword"
+                    placeholder="Confirme a sua palavra-passe"
+                    type={showConfirmPassoword ? "text" : "password"}
+                    tabIndex={1}
+                    name="confirmPassword"
+                  />
+                </Box>
+
+                <Button
+                  w={"full"}
+                  bg="#0a72e7"
+                  color={"white"}
+                  rounded={"md"}
+                  _hover={{
+                    transform: "translateY(-2px)",
+                    boxShadow: "lg",
+                  }}
+                  type="submit"
+                >
+                  CRIAR CONTA
+                </Button>
+                <Center pt={5}>
+                  <Flex alignContent="center">
+                    <Text fontSize="md" fontWeight={"medium"}>
+                      JÁ TENS CONTA?
+                    </Text>
+                    <Text fontSize="md" ml={"0.3rem"} fontWeight="bold" color="#00c6ff">
+                      <Link to="/login">LOGIN</Link>
+                    </Text>
+                  </Flex>
+                </Center>
+              </Box>
+            </VStack>
+          )}
+        </Formik>
+      </ChakraProvider>
       <ToastContainer />
     </>
   );
 }
-
-const FormContainer = styled.div`
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1rem;
-  align-items: center;
-  background-color: #131324;
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    justify-content: center;
-    img {
-      height: 5rem;
-    }
-    h1 {
-      color: white;
-      text-transform: uppercase;
-    }
-  }
-  label {
-    color: #ffffff;
-  }
-
-  .centerAlready {
-    padding-left: 25%;
-  }
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    width: 28rem;
-    background-color: #00000076;
-    border-radius: 2rem;
-    padding: 3rem 3rem;
-  }
-
-  .inputGroup {
-    background-color: transparent;
-    padding: 1rem;
-    border: 0.15rem solid #0a72e7;
-    border-radius: 0.4rem;
-    color: white;
-    margin-top: 0.5rem;
-    &:focus-within {
-      border: 0.15rem solid #00c6ff;
-      outline: none;
-    }
-  }
-  input {
-    background-color: transparent !important;
-    color: white;
-    padding-left: 1rem;
-    width: 80%;
-    font-size: 1rem;
-    border: 0;
-    &:focus {
-      outline: none !important;
-    }
-  }
-
-  button {
-    background-color: #0a72e7;
-    color: white;
-    padding: 1rem 2rem;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 0.4rem;
-    font-size: 1rem;
-    text-transform: uppercase;
-    &:hover {
-      background-color: #2a07ed;
-    }
-  }
-  span {
-    color: white;
-    text-transform: uppercase;
-    padding-left: 15%;
-    a {
-      margin-left: 5px;
-      color: #00c6ff;
-      text-decoration: none;
-      font-weight: bold;
-      &:hover {
-        color: #0a72e7;
-      }
-    }
-  }
-  .azul {
-    color: #0a72e7;
-  }
-`;
-
 export default Register;

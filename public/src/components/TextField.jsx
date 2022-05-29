@@ -7,7 +7,11 @@ import {
   InputGroup,
   InputLeftElement,
   InputRightElement,
+  Spacer,
+  Text,
 } from "@chakra-ui/react";
+import { faCircleExclamation, faWarning } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useField } from "formik";
 import React from "react";
 
@@ -17,6 +21,7 @@ const TextField = ({ label, id, leftElement, rightElement, ...props }) => {
   return (
     <FormControl isInvalid={meta.error && meta.touched}>
       <FormLabel
+        pt={3}
         onClick={() => {
           document.getElementById({ id }).focus();
         }}
@@ -30,8 +35,10 @@ const TextField = ({ label, id, leftElement, rightElement, ...props }) => {
         {rightElement !== null ? <InputRightElement children={rightElement} /> : ""}
       </InputGroup>
       <FormErrorMessage>
-        <WarningIcon pt={1} pr={1} />
-        {meta.error}
+        <FontAwesomeIcon size="lg" icon={faCircleExclamation} />
+        <Text fontWeight={"bold"} ml={2}>
+          {meta.error}
+        </Text>
       </FormErrorMessage>
     </FormControl>
   );
