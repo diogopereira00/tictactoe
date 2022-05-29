@@ -1,226 +1,187 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import Logo from "../assets/logo.png";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import styled from "styled-components";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { loginRoute } from "../utils/APIRoutes";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
+import {
+  Box,
+  Button,
+  Center,
+  ChakraProvider,
+  extendTheme,
+  Flex,
+  Heading,
+  Image,
+  InputLeftElement,
+  InputRightElement,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import { Formik } from "formik";
+import logo from "../assets/logo.png";
+import { EmailIcon, LockIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import * as Yup from "yup";
+import TextField from "../components/TextField";
+import { ToastContainer, toast } from "react-toastify";
 
-function Login() {
+export default function Login() {
+  const [show, setShow] = React.useState(false);
+  const handleClick = () => setShow(!show);
+
   const navigate = useNavigate();
   const toastOptions = {
-    position: "bottom-right",
-    autoClose: 5000,
-    pauseOnHover: true,
+    position: "bottom-center",
+    autoClose: 3000,
+    closeOnClick: true,
     draggable: true,
     theme: "dark",
   };
-
   useEffect(() => {
     if (localStorage.getItem("user")) {
       navigate("/");
     }
   }, []);
 
-  const [values, setValues] = useState({
-    email: "",
-    password: "",
-  });
+  const colors = {
+    brand: {
+      900: "#1a365d",
+      800: "#153e75",
+      700: "#2a69ac",
+    },
+  };
+  const theme = extendTheme({ colors });
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (handleValidation()) {
-      console.log("in validation", loginRoute);
-      let { password, email } = values;
-      email = email.toLowerCase();
-      const { data } = await axios.post(loginRoute, {
-        email,
-        password,
-      });
-      if (data.status === true) {
-        delete data.password;
-        localStorage.setItem("user", JSON.stringify(data.user));
-        navigate("/");
-      }
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions);
-        document.getElementById("password").value = "";
-      }
+  async function validateUser(values) {
+    console.log("in validation", loginRoute);
+    let { email, password } = values;
+    email = email.toLowerCase();
+    const { data } = await axios.post(loginRoute, {
+      email,
+      password,
+    });
+    if (data.status === true) {
+      delete data.password;
+      localStorage.setItem("user", JSON.stringify(data.user));
+      navigate("/");
     }
-  };
-  const handleChange = (event) => {
-    setValues({ ...values, [event.target.name]: event.target.value });
-  };
-
-  // MUDAR VALIDAÇOES
-  const handleValidation = () => {
-    const { password, email } = values;
-    if (email === "" || password === "") {
-      toast.warning("Precisa de introduzir um email e uma password", toastOptions);
-      return false;
+    if (data.status === false) {
+      // toast.error(data.msg, toastOptions);
+      toast.error(data.msg, toastOptions);
     }
-
-    return true;
-  };
-
+  }
   return (
     <>
-      <FormContainer>
-        <form autoComplete="off" onSubmit={(event) => handleSubmit(event)}>
-          <div className="brand">
-            <img src={Logo} alt="" />
-            <h1>TicTacToe</h1>
-          </div>
-          <div>
-            <label htmlFor="email">Email</label>
-            <div
-              tabIndex={0}
-              className="inputGroup"
-              onClick={() => {
-                document.getElementById("email").focus();
-              }}
+      <ChakraProvider theme={theme}>
+        <Formik
+          initialValues={{ email: "", password: "" }}
+          validationSchema={Yup.object({
+            password: Yup.string().required("Precisa de introduzir uma palavra-passe"),
+            email: Yup.string()
+              .email("Por favor, introduza um email válido.")
+              .required("Precisa de introduzir um email."),
+          })}
+          onSubmit={(values, actions) => {
+            // alert(JSON.stringify(values, null, 2));
+            validateUser(values);
+            console.log(actions);
+            actions.setFieldValue("password", "");
+          }}
+        >
+          {(formik) => (
+            <VStack
+              as="form"
+              mx="auto"
+              w={{ base: "90%", md: 500 }}
+              h="100vh"
+              justifyContent="center"
+              onSubmit={formik.handleSubmit}
             >
-              <FontAwesomeIcon size="lg" className="azul" icon={faUser} />
-              <input
-                id="email"
-                type="email"
-                placeholder="Introduza o seu email"
-                name="email"
-                onChange={(e) => handleChange(e)}
-              />
-            </div>
-          </div>
+              <Box
+                width="28rem"
+                backgroundColor="#00000076"
+                borderRadius="2rem"
+                padding="3rem 3rem"
+              >
+                <Center pb={7}>
+                  <Flex>
+                    <Image maxH={"5rem"} src={logo} mr={5}></Image>
+                    <Heading as="h4" size="xl" color="white" alignSelf={"center"}>
+                      TICTACTOE
+                    </Heading>
+                  </Flex>
+                </Center>
+                <Box pb={7}>
+                  <TextField
+                    label="Email"
+                    values={formik.values.email}
+                    leftElement={
+                      <InputLeftElement
+                        pointerEvents="none"
+                        children={<EmailIcon fontSize={"1.2em"} color="blue.400" />}
+                      />
+                    }
+                    fontWeight={"medium"}
+                    id="email"
+                    placeholder="Introduza o seu email"
+                    type="email"
+                    tabIndex={1}
+                    name="email"
+                  />
 
-          <div>
-            <label htmlFor="password">Palavra-passe</label>
-            <div
-              tabIndex={2}
-              className="inputGroup"
-              onClick={() => {
-                document.getElementById("password").focus();
-              }}
-            >
-              <FontAwesomeIcon size="lg" className="azul" icon={faLock} />
-              <input
-                id="password"
-                type="password"
-                placeholder="Introduza a sua palavra-passe"
-                name="password"
-                onChange={(e) => handleChange(e)}
-              />
-            </div>
-          </div>
+                  <TextField
+                    label="Palavra-passe"
+                    values={formik.values.password}
+                    leftElement={
+                      <InputLeftElement
+                        pointerEvents="none"
+                        children={<LockIcon fontSize={"1.2em"} color="blue.400" />}
+                      />
+                    }
+                    rightElement={
+                      <InputRightElement width="4rem">
+                        <Button size="sm" onClick={handleClick}>
+                          {show ? <ViewOffIcon /> : <ViewIcon fontSize={"1.2em"} />}
+                        </Button>
+                      </InputRightElement>
+                    }
+                    fontWeight={"medium"}
+                    id="password"
+                    placeholder="Introduza a sua palavra-passe"
+                    type={show ? "text" : "password"}
+                    tabIndex={1}
+                    name="password"
+                  />
+                </Box>
 
-          <button type="submit">Iniciar Sessão</button>
-          <span>
-            Não tens conta?
-            <Link to="/register">Regista-te </Link>
-          </span>
-        </form>
-      </FormContainer>
+                <Button
+                  w={"full"}
+                  bg="#0a72e7"
+                  color={"white"}
+                  rounded={"md"}
+                  _hover={{
+                    transform: "translateY(-2px)",
+                    boxShadow: "lg",
+                  }}
+                  type="submit"
+                >
+                  INICIAR SESSÃO
+                </Button>
+                <Center pt={5}>
+                  <Flex alignContent="center">
+                    <Text fontSize="md" fontWeight={"medium"}>
+                      NÃO TENS CONTA?
+                    </Text>
+                    <Text fontSize="md" ml={"0.3rem"} fontWeight="bold" color="#00c6ff">
+                      <Link to="/register">REGISTA-TE</Link>
+                    </Text>
+                  </Flex>
+                </Center>
+              </Box>
+            </VStack>
+          )}
+        </Formik>
+      </ChakraProvider>
       <ToastContainer />
     </>
   );
 }
-
-const FormContainer = styled.div`
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1rem;
-  align-items: center;
-  background-color: #131324;
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    justify-content: center;
-    img {
-      height: 5rem;
-    }
-    h1 {
-      color: white;
-      text-transform: uppercase;
-    }
-  }
-  label {
-    color: #ffffff;
-  }
-
-  .centerAlready {
-    padding-left: 25%;
-  }
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    width: 28rem;
-    background-color: #00000076;
-    border-radius: 2rem;
-    padding: 3rem 3rem;
-  }
-
-  .inputGroup {
-    background-color: transparent;
-    padding: 1rem;
-    border: 0.15rem solid #0a72e7;
-    border-radius: 0.4rem;
-    color: white;
-    margin-top: 0.5rem;
-    &:focus-within {
-      border: 0.15rem solid #00c6ff;
-      outline: none;
-    }
-  }
-  input {
-    background-color: transparent !important;
-    color: white;
-    padding-left: 1rem;
-    width: 80%;
-    font-size: 1rem;
-    border: 0;
-    &:focus {
-      outline: none !important;
-    }
-  }
-
-  button {
-    background-color: #0a72e7;
-    color: white;
-    padding: 1rem 2rem;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 0.4rem;
-    font-size: 1rem;
-    text-transform: uppercase;
-    &:hover {
-      background-color: #2a07ed;
-    }
-  }
-  span {
-    color: white;
-    text-transform: uppercase;
-    padding-left: 15%;
-    a {
-      margin-left: 5px;
-      color: #00c6ff;
-      text-decoration: none;
-      font-weight: bold;
-      &:hover {
-        color: #0a72e7;
-      }
-    }
-  }
-  .azul {
-    color: #0a72e7;
-  }
-`;
-
-export default Login;
