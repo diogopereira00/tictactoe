@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import "../App.css";
 import user from "../assets/user.png";
 
@@ -30,7 +30,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 
-import { CopyIcon, RepeatIcon } from "@chakra-ui/icons";
+import { CopyIcon, RepeatIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import {
   createGameRoute,
@@ -42,6 +42,7 @@ import Scoreboard from "./Scoreboard";
 import socket from "../context/socket";
 function CurrentGame(props) {
   socket.emit("connectUser", props.creator.username, props.creator.id);
+  const navigate = useNavigate();
 
   const [game, setGame] = useState(Array(9).fill(""));
   const [turnNumber, setTurnNumber] = useState(0);
@@ -74,6 +75,11 @@ function CurrentGame(props) {
   const toast = useToast();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenErrorJoin,
+    onOpen: onOpenErrorJoin,
+    onClose: onCloseErrorJoin,
+  } = useDisclosure();
 
   var testePlayer2 = "";
   const turn = (index) => {
@@ -197,7 +203,7 @@ function CurrentGame(props) {
           setRoom(paramsRoom);
           setMyTurn(false);
         } else {
-          alert(data.msg);
+          onOpenErrorJoin();
         }
       } else {
         // means you are player 1
@@ -259,6 +265,42 @@ function CurrentGame(props) {
 
   return (
     <ChakraProvider theme={theme}>
+      {/* MODAL ERRO, JOGO CHEIO */}
+      <Modal
+        closeOnOverlayClick={false}
+        isCentered
+        isOpen={isOpenErrorJoin}
+        onClose={onCloseErrorJoin}
+        size={"lg"}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            <Text fontSize="2xl" fontWeight="bold" color="red.500">
+              <WarningTwoIcon mb="1" mr="2" />
+              ERRO!
+            </Text>
+          </ModalHeader>
+          <ModalBody>
+            <Text fontSize="xl" fontWeight="bold">
+              Ups. Parece que esta sala já está cheia.
+            </Text>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              onClick={() => {
+                navigate("/");
+                window.location.reload();
+              }}
+            >
+              Voltar ao lobby
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      {/* MODAL UTILIZADOR SAIU, GANHASTE O JOGO */}
       <Modal closeOnOverlayClick={false} isCentered isOpen={isOpen} onClose={onClose} size={"lg"}>
         <ModalOverlay />
         <ModalContent>
@@ -274,8 +316,14 @@ function CurrentGame(props) {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" onClick={async () => {}}>
-              Voltar a página Inicial
+            <Button
+              colorScheme="blue"
+              onClick={() => {
+                navigate("/");
+                window.location.reload();
+              }}
+            >
+              Voltar ao lobby
             </Button>
           </ModalFooter>
         </ModalContent>
