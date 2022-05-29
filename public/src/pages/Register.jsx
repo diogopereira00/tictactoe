@@ -81,10 +81,12 @@ function Register() {
         <Formik
           initialValues={{ email: "", password: "", username: "", confirmPassword: "" }}
           validationSchema={Yup.object({
-            username: Yup.string().min(
-              6,
-              "O seu nome de utilizador tem de ter pelo menos 6 caracteres"
-            ),
+            username: Yup.string()
+              .min(6, "O seu nome de utilizador tem de ter pelo menos 6 caracteres")
+              .matches(
+                /^[a-zA-Z0-9@]+$/,
+                "O nome de utilizador não pode ter espaços nem caracteres especiais"
+              ),
             password: Yup.string().matches(
               /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
               "Precisa de ter pelo menos 8 caracteres, uma maiuscula, uma minuscula, um numero e um caracter especial"
