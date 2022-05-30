@@ -22,7 +22,14 @@ module.exports.register = async (req, res, next) => {
       password: passwordEncriptada,
     });
     delete user.password;
-    return res.json({ status: true, user });
+    return res.json({
+      status: true,
+      user: {
+        avatarImage: user.avatarImage,
+        username: user.username,
+        _id: user._id,
+      },
+    });
   } catch (ex) {
     next(ex);
   }

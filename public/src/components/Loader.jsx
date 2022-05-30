@@ -1,10 +1,10 @@
-import { Center } from "@chakra-ui/react";
+import { VStack } from "@chakra-ui/react";
 import React from "react";
 import styled from "styled-components";
 
 function Loader() {
   return (
-    <Center>
+    <VStack h="100vh" justifyContent="center">
       <FormContainer>
         <svg className="svgO" viewBox="0 0 144 104" width="144" height="104">
           <defs>
@@ -75,7 +75,7 @@ function Loader() {
           </g>
         </svg>
       </FormContainer>
-    </Center>
+    </VStack>
   );
 }
 const FormContainer = styled.div`

@@ -8,7 +8,20 @@ import axios from "axios";
 import { Buffer } from "buffer";
 import { setAvatarRoute, getCurrentUserRoute } from "../utils/APIRoutes";
 import Loader from "../components/Loader";
+import {
+  Avatar,
+  Box,
+  Button,
+  Center,
+  ChakraProvider,
+  Flex,
+  Heading,
+  Input,
+  SimpleGrid,
+  VStack,
+} from "@chakra-ui/react";
 
+import ".././App.css";
 export default function SetAvatar() {
   const api = "https://api.multiavatar.com/Y3fZ4WT7dkaQz1";
   // falta usar a key
@@ -88,7 +101,6 @@ export default function SetAvatar() {
         console.log(image);
 
         const buffer = new Buffer(image.data);
-        console.log("buffer: " + buffer);
         data.push("data:image/svg+xml;base64," + buffer.toString("base64"));
       }
       data.push(baseImage);
@@ -100,125 +112,166 @@ export default function SetAvatar() {
   }, []);
 
   return (
-    <>
+    <ChakraProvider>
       {isLoading ? (
-        <Container>
+        <Center>
           {/* <img src={loader} alt="loader" className="loader" /> */}
           <Loader />
-        </Container>
+        </Center>
       ) : (
-        <Container>
-          <div className="title-container">
-            <h1>Olá {user.username}, seleciona uma foto de perfil !</h1>
-          </div>
-          <div className="avatars">
-            {avatars.map((avatar, index) => {
-              return (
-                <div className={`avatar ${selectedAvatar === index ? "selected" : ""}`}>
-                  {/* se for a ultima foto na lista, é para adicionar entao */}
-                  {index === avatars.length - 1 ? (
-                    <label htmlFor="file-input">
-                      <img
-                        className="displayImages"
+        <VStack mx="auto" h="100vh" justifyContent="center">
+          <Box>
+            <Heading textAlign="center">Olá {user.username}, seleciona uma foto de perfil!</Heading>
+            <SimpleGrid
+              pt="2vh"
+              pb="2vh"
+              display={["grid", null, "flex"]}
+              spacing={["0", null, "2rem"]}
+              columns={[1, null, 4]}
+              justifyContent={"center"}
+              alignItems="center"
+            >
+              {avatars.map((avatar, index) => {
+                return (
+                  // <div className={`avatar ${selectedAvatar === index ? "selected" : ""}`}>
+                  <Flex
+                    padding="0.4rem"
+                    borderRadius={"5rem"}
+                    justifyContent="center"
+                    alignItems="center"
+                    key={index}
+                    _hover={{
+                      border: "0.4rem solid #00c6ff",
+                    }}
+                    transition="0.5s ease-in-out"
+                    border={
+                      selectedAvatar === index ? "0.4rem solid #0a72e7" : "0.4rem solid transparent"
+                    }
+                  >
+                    {index === avatars.length - 1 ? (
+                      <label htmlFor="file-input">
+                        <Avatar
+                          height={"6rem"}
+                          width="6rem"
+                          transition="0.5s ease-in-out"
+                          src={avatar}
+                          alt="avatar"
+                          id={index}
+                          onClick={() => setSelectedAvatar(index)}
+                        />
+                        <Input
+                          display="none"
+                          id="file-input"
+                          type="file"
+                          onChange={(e) => {
+                            uploadImage(e);
+                          }}
+                        />
+                      </label>
+                    ) : (
+                      <Avatar
+                        width="6rem"
+                        height={"6rem"}
                         src={avatar}
                         alt="avatar"
                         id={index}
-                        onClick={() => setSelectedAvatar(index)}
-                      />
-                      <input
-                        className="displayFile"
-                        id="file-input"
-                        type="file"
-                        onChange={(e) => {
-                          uploadImage(e);
+                        _selected={{
+                          border: "0.4rem solid #00c6ff",
                         }}
-                      />
-                    </label>
-                  ) : (
-                    // caso contrario
-                    <img
-                      src={avatar}
-                      alt="avatar"
-                      id={index}
-                      onClick={() => setSelectedAvatar(index)}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          <button onClick={setProfilePicture} className="submit-btn">
-            Definir imagem de perfil
-          </button>
-          <ToastContainer />
-        </Container>
+                        onClick={() => setSelectedAvatar(index)}
+                      ></Avatar>
+                    )}
+                  </Flex>
+                );
+              })}
+            </SimpleGrid>
+            <Center>
+              <Button
+                fontWeight={"bold"}
+                onClick={setProfilePicture}
+                bg="#0a72e7"
+                color={"white"}
+                rounded={"md"}
+                _hover={{
+                  transform: "translateY(-2px)",
+                  boxShadow: "lg",
+                  backgroundColor: "#4e0eff",
+                }}
+                type="submit"
+              >
+                Definir Imagem de Perfil
+              </Button>
+            </Center>
+          </Box>
+        </VStack>
       )}
-    </>
+      <ToastContainer />
+    </ChakraProvider>
   );
 }
 
-const Container = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  gap: 3rem;
-  background-color: #131324;
-  height: 100vh;
-  width: 100vw;
-  .loader {
-    max-inline-size: 100%;
-  }
-  .title-container {
-    h1 {
-      color: white;
-    }
-  }
-  .displayImages {
-    max-width: 96px;
-    border-radius: 50%;
-  }
-  .displayFile {
-    display: none;
-  }
-  .avatars {
-    display: flex;
-    gap: 2rem;
-    .avatar {
-      border: 0.4rem solid transparent;
-      padding: 0.4rem;
-      border-radius: 5rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: 0.5s ease-in-out;
-      img {
-        height: 6rem;
-        transition: 0.5s ease-in-out;
-      }
-      &:hover {
-        border: 0.4rem solid #00c6ff;
-      }
-    }
-    .selected {
-      border: 0.4rem solid #0a72e7;
-      &:hover {
-        border: 0.4rem solid #0a72e7;
-      }
-    }
-  }
-  .submit-btn {
-    background-color: #0a72e7;
-    color: white;
-    padding: 1rem 2rem;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 0.4rem;
-    font-size: 1rem;
-    text-transform: uppercase;
-    &:hover {
-      background-color: #4e0eff;
-    }
-  }
-`;
+// const Container = styled.div`
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   flex-direction: column;
+//   gap: 3rem;
+//   background-color: #131324;
+//   height: 100vh;
+//   width: 100vw;
+//   .loader {
+//     max-inline-size: 100%;
+//   }
+//   .title-container {
+//     h1 {
+//       color: white;
+//     }
+//   }
+//   .displayImages {
+//     max-width: 96px;
+//     border-radius: 50%;
+//   }
+//   .displayFile {
+//     display: none;
+//   }
+//   .avatars {
+//     display: flex;
+//     gap: 2rem;
+//     .avatar {
+//       border: 0.4rem solid transparent;
+//       padding: 0.4rem;
+//       border-radius: 5rem;
+//       display: flex;
+//       justify-content: center;
+//       align-items: center;
+//       transition: 0.5s ease-in-out;
+//       img {
+//         height: 6rem;
+//         transition: 0.5s ease-in-out;
+//       }
+//       &:hover {
+//         border: 0.4rem solid #00c6ff;
+//       }
+//     }
+//     .selected {
+//       border: 0.4rem solid #0a72e7;
+//       &:hover {
+//         border: 0.4rem solid #0a72e7;
+//       }
+//     }
+//   }
+//   .submit-btn {
+//     background-color: #0a72e7;
+//     color: white;
+//     padding: 1rem 2rem;
+//     border: none;
+//     font-weight: bold;
+//     cursor: pointer;
+//     border-radius: 0.4rem;
+//     font-size: 1rem;
+//     text-transform: uppercase;
+//     &:hover {
+//       background-color: #4e0eff;
+//     }
+//   }
+// `;
