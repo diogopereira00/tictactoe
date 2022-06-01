@@ -29,8 +29,6 @@ import { MoonIcon, SunIcon, WarningIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import socket from "../context/socket";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { leaverGameRoute } from "../utils/APIRoutes";
 
 export default function Nav(props) {
   const navigate = useNavigate();
@@ -79,7 +77,7 @@ export default function Nav(props) {
         </ModalContent>
       </Modal>
 
-      <Box bg={useColorModeValue("#0a72e7", "gray.900")} px={4} maxH="15vh">
+      <Box bg={useColorModeValue("#0a72e7", "gray.900")} px={4} maxW="100vw">
         <Flex h={20} alignItems={"center"} justifyContent={"space-between"}>
           <Box
             onClick={async () => {
@@ -116,10 +114,6 @@ export default function Nav(props) {
               </Badge>
             </Text>
             <Stack direction={"row"} spacing={7}>
-              <Button onClick={toggleColorMode} mt={3}>
-                {colorMode === "light" ? <MoonIcon boxSize={6} /> : <SunIcon boxSize={6} />}
-              </Button>
-
               <Menu>
                 <MenuButton
                   as={Button}
@@ -139,12 +133,26 @@ export default function Nav(props) {
                 <MenuList alignItems={"center"}>
                   <Flex ml={4}>
                     <Avatar size={"md"} src={props.image} mr={4} />
-                    <Heading as="h4" size="md" pt={2}>
+                    <Heading as="h4" size="md" pt={2.5}>
                       {props.username}
                     </Heading>
                   </Flex>
 
                   <MenuDivider />
+
+                  <MenuItem justifyContent="center" onClick={toggleColorMode}>
+                    {colorMode === "light" ? (
+                      <>
+                        <MoonIcon boxSize={6} pr={2} /> Tema Escuro
+                      </>
+                    ) : (
+                      <>
+                        <SunIcon boxSize={6} pr={2} /> Tema Claro
+                      </>
+                    )}
+                  </MenuItem>
+                  <MenuDivider />
+
                   <MenuItem
                     onClick={() => {
                       var currentPage = window.location.href;
@@ -152,6 +160,8 @@ export default function Nav(props) {
                         if (document.getElementById("partilhar") === null) {
                           setSairGame("/setAvatar");
                           onOpen();
+                        } else {
+                          navigate("/setAvatar");
                         }
                       } else {
                         navigate("/setAvatar");
@@ -160,7 +170,24 @@ export default function Nav(props) {
                   >
                     <Text fontSize="lg">Mudar o avatar</Text>
                   </MenuItem>
-                  <MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      var currentPage = window.location.href;
+                      if (currentPage.includes("/game")) {
+                        console.log("aqui");
+                        if (document.getElementById("partilhar") === null) {
+                          setSairGame("/matchHistory");
+                          onOpen();
+                        } else {
+                          navigate("/matchHistory");
+                          window.location.reload();
+                        }
+                      } else {
+                        navigate("/matchHistory");
+                        window.location.reload();
+                      }
+                    }}
+                  >
                     <Text fontSize="lg">Historico de Partidas</Text>
                   </MenuItem>
                   <MenuItem>
