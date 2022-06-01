@@ -145,7 +145,9 @@ module.exports.getAllGamesFromPlayer = async (req, res, next) => {
     const id = req.params.id;
     // console.log("id " + id);
     console.log(id);
-    const game = await Game.find({ $or: [{ player1: id }, { player2: id }] }).sort({ endTime: -1 });
+    const game = await Game.find({ $or: [{ player1: id }, { player2: id }] })
+      .where({ status: "closed" })
+      .sort({ endTime: -1 });
     var partidasGanhas = 0;
     var totalPartidas = 0;
     // game.forEach((element) => {
