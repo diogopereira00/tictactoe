@@ -42,7 +42,7 @@ export default function Chat() {
         <Loader />
       ) : (
         <>
-          <ShowGames />
+          <ShowGames image={user.image} username={user.username} id={user.id} />
         </>
       )}
     </ChakraProvider>
