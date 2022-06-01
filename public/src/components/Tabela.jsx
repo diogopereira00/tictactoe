@@ -24,6 +24,7 @@ import {
   useBreakpointValue,
   Badge,
   TableContainer,
+  Heading,
 } from "@chakra-ui/react";
 import {
   ArrowRightIcon,
@@ -97,12 +98,15 @@ function CustomTable({ columns, data }) {
           )}
         </code>
       </pre> */}
+      <Heading mt="1rem" textAlign="center" ml={["0rem", "2rem", "5rem"]}>
+        Histórico de Partidas
+      </Heading>
       <TableContainer
-        ml={["0rem", "2rem", "5rem"]}
-        mr={["0rem", "2rem", "5rem"]}
-        w="90vw"
+        ml={["1rem", "2rem", "5rem"]}
+        mr={["1rem", "2rem", "5rem"]}
+        w={["95vw", "90vw", "90vw"]}
         mt="1rem"
-        maxH="87vh"
+        maxH="80vh"
         overflowY={"auto"}
         border="0.1rem solid rgba(255, 255, 255, 0.16)"
         borderRadius="1.5rem"
@@ -369,8 +373,8 @@ function Tabela(props) {
             src={tableProps.row.original.adversario.image}
             size={useBreakpointValue({ base: "sm", md: "md" })}
             float="right"
-            mt="2"
-            mb="2"
+            mt="0.52vh"
+            mb="0.50vh"
           ></Avatar>
         ),
       },
