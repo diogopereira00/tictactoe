@@ -61,6 +61,7 @@ export default function SetAvatar() {
         user.avatarImage = data.image;
         localStorage.setItem("user", JSON.stringify(user));
         navigate("/");
+        window.location.reload();
       } else {
         toast.error("Error setting avatar. Please try again.", toastOptions);
       }
