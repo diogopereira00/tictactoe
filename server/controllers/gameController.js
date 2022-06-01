@@ -137,3 +137,42 @@ module.exports.getCurrentRoom = async (req, res, next) => {
     next(ex);
   }
 };
+module.exports.getAllGamesFromPlayer = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    // console.log("id " + id);
+    console.log(id);
+    const game = await Game.find({ $or: [{ player1: id }, { player2: id }] }).sort({ endTime: -1 });
+    var partidasGanhas = 0;
+    var totalPartidas = 0;
+    // game.forEach((element) => {
+    //   if (element.player1 === id) {
+    //     if (element.vencedor === element.player1) {
+    //       element.resultado = "VITORIA";
+    //     } else if (element.vencedor === element.player2) {
+    //       element.resultado = "DERROTA";
+    //     } else {
+    //       element.resultado = "EMPATE";
+    //     }
+    //     // const adversario = getUser(element.player2);
+    //     // element.adversario = adversario;
+    //   } else {
+    //     if (element.player2 === element.vencedor) {
+    //       element.resultado = "VITORIA";
+    //     } else if (element.player1 === element.vencedor) {
+    //       element.resultado = "DERROTA";
+    //     } else {
+    //       element.resultado = "EMPATE";
+    //     }
+    //   }
+    // });
+
+    console.log(game);
+    // console.log(game);
+    return res.json({
+      game,
+    });
+  } catch (ex) {
+    next(ex);
+  }
+};
