@@ -18,9 +18,9 @@ function Game() {
       }
       const userLS = JSON.parse(localStorage.getItem("user"));
       const data = await axios.get(`${getCurrentUserRoute}/${userLS._id}`);
-      console.log("dados user : " + data.image);
+      // console.log("dados user : " + data.image);
       setUser(data.data);
-      console.log("user:" + user._id);
+      // console.log("user:" + user._id);
       setIsLoading(false);
     }
     fetchData();
