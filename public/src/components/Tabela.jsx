@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useTable, usePagination } from "react-table";
+import { useTable, usePagination, useSortBy } from "react-table";
 import {
   Table,
+  chakra,
   Thead,
   Tbody,
   Tr,
@@ -24,7 +25,14 @@ import {
   Badge,
   TableContainer,
 } from "@chakra-ui/react";
-import { ArrowRightIcon, ArrowLeftIcon, ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
+import {
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  ChevronRightIcon,
+  ChevronLeftIcon,
+  TriangleDownIcon,
+  TriangleUpIcon,
+} from "@chakra-ui/icons";
 import { getAllGamesFromPlayer, getCurrentUserRoute } from "../utils/APIRoutes";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -58,6 +66,7 @@ function CustomTable({ columns, data }) {
       data,
       initialState: { pageIndex: 0 },
     },
+    useSortBy,
     usePagination
   );
 
@@ -89,22 +98,34 @@ function CustomTable({ columns, data }) {
         </code>
       </pre> */}
       <TableContainer
-        ml={["0rem", null, "7rem"]}
-        mr={["0rem", null, "8rem"]}
-        maxW="100%"
+        ml={["0rem", "2rem", "5rem"]}
+        mr={["0rem", "2rem", "5rem"]}
+        w="90vw"
         mt="1rem"
         maxH="87vh"
         overflowY={"auto"}
         border="0.1rem solid rgba(255, 255, 255, 0.16)"
         borderRadius="1.5rem"
       >
-        <Table maxW="100%" variant="striped" {...getTableProps()}>
+        <Table variant="striped" {...getTableProps()}>
           <Thead>
             {headerGroups.map((headerGroup) => (
               <Tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <Th pl={column.Header === "JOGO" ? "2rem" : ""} {...column.getHeaderProps()}>
+                  <Th
+                    pl={column.Header === "JOGO" ? "4rem" : ""}
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                  >
                     {column.render("Header")}
+                    <chakra.span pl="4">
+                      {column.isSorted ? (
+                        column.isSortedDesc ? (
+                          <TriangleDownIcon aria-label="sorted descending" />
+                        ) : (
+                          <TriangleUpIcon aria-label="sorted ascending" />
+                        )
+                      ) : null}
+                    </chakra.span>
                   </Th>
                 ))}
               </Tr>
@@ -173,16 +194,16 @@ function CustomTable({ columns, data }) {
 
           <Flex alignItems="center">
             <Text flexShrink="0" mr={8}>
-              Página{" "}
-              <Text fontWeight="bold" as="span">
+              Página
+              <Text pl="1" pr="1" fontWeight="bold" as="span">
                 {pageIndex + 1}
-              </Text>{" "}
-              de{" "}
-              <Text fontWeight="bold" as="span">
+              </Text>
+              de
+              <Text ml="1" fontWeight="bold" as="span">
                 {pageOptions.length}
               </Text>
             </Text>
-            <Text flexShrink="0">Ir para:</Text>{" "}
+            <Text flexShrink="0">Ir para:</Text>
             <NumberInput
               ml={2}
               mr={8}
