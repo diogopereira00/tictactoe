@@ -109,7 +109,7 @@ export default function SetAvatar() {
       setIsLoading(false);
     }
     fetchData();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <ChakraProvider>
