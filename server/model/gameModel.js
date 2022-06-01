@@ -53,6 +53,11 @@ const gameSchema = new mongoose.Schema({
     required: false,
     unique: false,
   },
+  public: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 module.exports = mongoose.model("Games", gameSchema);

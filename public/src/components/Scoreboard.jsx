@@ -29,6 +29,9 @@ function Scoreboard(props) {
         <Badge fontSize={24} colorScheme="default">
           VS
         </Badge>
+        <Badge fontSize={17} colorScheme="default">
+          MELHOR DE {props.tipoJogo}
+        </Badge>
       </Stack>
       <Spacer />
       <Stack spacing={0} align={"center"} mt="7%">

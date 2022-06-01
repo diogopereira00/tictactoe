@@ -8,14 +8,103 @@ import {
   Button,
   useColorModeValue,
   Badge,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  Text,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+  Tag,
+  TagLabel,
+  HStack,
+  Switch,
 } from "@chakra-ui/react";
-import React from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function GameCreate(props) {
   const navigate = useNavigate();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectGame, setSelectGame] = useState(undefined);
+  const [partidaPrivada, setPartidaPrivada] = useState(false);
+
   return (
     <>
+      <Modal closeOnOverlayClick={false} isCentered isOpen={isOpen} onClose={onClose} size={"xl"}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            <Text fontSize="2xl" fontWeight="bold">
+              Começar um novo jogo
+            </Text>
+          </ModalHeader>
+          <ModalBody>
+            <Text fontSize="lg" fontWeight="bold">
+              Que tipo de jogo pretendes jogar?
+            </Text>
+            <HStack pt="0.5vh" spacing="4">
+              <Button
+                borderRadius={"full"}
+                colorScheme={selectGame === 1 ? "green" : "gray"}
+                variant="solid"
+                id="1"
+                onClick={() => setSelectGame(1)}
+              >
+                MELHOR DE 1
+              </Button>{" "}
+              <Button
+                borderRadius={"full"}
+                colorScheme={selectGame === 3 ? "green" : "gray"}
+                variant="solid"
+                id="3"
+                onClick={() => setSelectGame(3)}
+              >
+                MELHOR DE 3
+              </Button>{" "}
+              <Button
+                borderRadius={"full"}
+                colorScheme={selectGame === 5 ? "green" : "gray"}
+                variant="solid"
+                id="4"
+                onClick={() => setSelectGame(5)}
+              >
+                MELHOR DE 5
+              </Button>
+            </HStack>
+            <Text fontSize="lg" fontWeight="bold" pt="1.5vh">
+              Partida privada?
+              <Switch
+                ml="2"
+                colorScheme="green"
+                id="partida-privada"
+                size="lg"
+                onChange={() => setPartidaPrivada(!partidaPrivada)}
+              />
+            </Text>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              onClick={() => {
+                console.log(selectGame);
+                console.log(partidaPrivada);
+                localStorage.setItem(
+                  "creategame",
+                  JSON.stringify({ tipoJogo: selectGame, partidaPrivada: partidaPrivada })
+                );
+                navigate("/game");
+                window.location.reload();
+              }}
+            >
+              Criar jogo
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       <Center py={3}>
         <Box
           maxW={"350px"}
@@ -94,8 +183,11 @@ export default function GameCreate(props) {
                   boxShadow: "lg",
                 }}
                 onClick={() => {
-                  navigate("/game");
-                  window.location.reload();
+                  setSelectGame(undefined);
+                  setPartidaPrivada(false);
+                  onOpen();
+                  // navigate("/game");
+                  // window.location.reload();
                 }}
               >
                 Criar uma partida

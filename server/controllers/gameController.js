@@ -5,7 +5,7 @@ const { use } = require("../routes/userRoutes");
 
 module.exports.create = async (req, res, next) => {
   try {
-    const { gameID, player1 } = req.body;
+    const { gameID, player1, melhorde, public } = req.body;
     const player1Data = await User.findById(player1);
     const gameIDcheck = await Game.findOne({ gameID });
     //verifica se o player1 ja tem um jogo aberto, nem ningem
@@ -21,7 +21,8 @@ module.exports.create = async (req, res, next) => {
         player2: "",
         status: "open",
         vencedor: "",
-        melhorde: "",
+        melhorde,
+        public,
         createTime: new Date(),
         endTime: "",
       });
@@ -45,6 +46,7 @@ module.exports.create = async (req, res, next) => {
         },
         player2: "",
         status: game.status,
+        melhorde: game.melhorde,
       },
     });
   } catch (ex) {
@@ -88,6 +90,7 @@ module.exports.joinRoom = async (req, res, next) => {
           avatar: player2Data.avatarImage,
         },
         status: game.status,
+        melhorde: game.melhorde,
       },
     });
   } catch (ex) {

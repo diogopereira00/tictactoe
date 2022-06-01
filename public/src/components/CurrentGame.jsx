@@ -59,6 +59,7 @@ function CurrentGame(props) {
   const paramsRoom = params.get("room");
   const [room, setRoom] = useState(paramsRoom);
 
+  const [tipoJogo, setTipoJogo] = useState([]);
   const [player1ID, setPlayer1ID] = useState([]);
   const [player2ID, setPlayer2ID] = useState([]);
 
@@ -184,6 +185,7 @@ function CurrentGame(props) {
           player2: props.creator.id,
         });
         if (data.status === true) {
+          setTipoJogo(data.game.melhorde);
           setPlayer1Username(data.game.player1.username);
           setPlayer1Avatar(data.game.player1.avatar);
           setPlayer1ID(data.game.player1.id);
@@ -208,17 +210,23 @@ function CurrentGame(props) {
       } else {
         // means you are player 1
         const newRoomName = random();
+        const melhorde = await JSON.parse(localStorage.getItem("creategame"));
+        console.log(melhorde.tipoJogo);
         //verificar se o player ja tem um jogo aberto, se tiver entra nesse
         const { data } = await axios.post(createGameRoute, {
           gameID: newRoomName,
           player1: props.creator.id,
+          melhorde: melhorde.tipoJogo,
+          public: !melhorde.partidaPrivada,
         });
+        localStorage.removeItem("creategame");
         const roomName = data.game.gameID;
         if (data.status === true) {
           setPlayer1Username(data.game.player1.username);
           setPlayer1ID(data.game.player1.id);
           setPlayer2ID("");
           setPlayer2Username("A aguardar adversario...");
+          setTipoJogo(data.game.melhorde);
 
           setPlayer1Avatar(data.game.player1.avatar);
           setPlayer2Avatar(user);
@@ -337,6 +345,7 @@ function CurrentGame(props) {
             </Badge>
           </Text>
           <Scoreboard
+            tipoJogo={tipoJogo}
             player1={player1Username}
             player1Avatar={player1Avatar}
             player2={player2Username}
