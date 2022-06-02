@@ -9,7 +9,6 @@ import {
   extendTheme,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -42,14 +41,12 @@ export default function Users() {
     }
     fetchData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  const colors = {
-    brand: {
-      900: "#1a365d",
-      800: "#153e75",
-      700: "#2a69ac",
+  const theme = extendTheme({
+    config: {
+      useSystemColorMode: true,
+      initialColorMode: "dark",
     },
-  };
-  const theme = extendTheme({ colors });
+  });
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
