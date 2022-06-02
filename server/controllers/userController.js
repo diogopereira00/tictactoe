@@ -20,6 +20,7 @@ module.exports.register = async (req, res, next) => {
       email,
       username,
       password: passwordEncriptada,
+      created: new Date(),
     });
     delete user.password;
     return res.json({
@@ -28,6 +29,7 @@ module.exports.register = async (req, res, next) => {
         avatarImage: user.avatarImage,
         username: user.username,
         _id: user._id,
+        isAdmin: user.isAdmin,
       },
     });
   } catch (ex) {
@@ -74,7 +76,15 @@ module.exports.login = async (req, res, next) => {
 
     delete user.password;
     console.log(user);
-    return res.json({ status: true, user });
+    return res.json({
+      status: true,
+      user: {
+        avatarImage: user.avatarImage,
+        username: user.username,
+        _id: user._id,
+        isAdmin: user.isAdmin,
+      },
+    });
   } catch (ex) {
     next(ex);
   }
@@ -92,6 +102,15 @@ module.exports.setAvatar = async (req, res, next) => {
       isSet: true,
       image: userData.avatarImage,
     });
+  } catch (ex) {
+    next(ex);
+  }
+};
+
+module.exports.getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find();
+    return res.json({ users });
   } catch (ex) {
     next(ex);
   }

@@ -24,11 +24,14 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Center,
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon, WarningIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import socket from "../context/socket";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { getCurrentUserRoute } from "../utils/APIRoutes";
 
 export default function Nav(props) {
   const navigate = useNavigate();
@@ -40,8 +43,18 @@ export default function Nav(props) {
       setOnlineUsers(onlineUsers);
     });
   });
+  const [isAdmin, setIsAdmin] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  useEffect(() => {
+    async function fetchData() {
+      const userLS = JSON.parse(localStorage.getItem("user"));
+      const data = await axios.get(`${getCurrentUserRoute}/${userLS._id}`);
+      // console.log(data.data);
+      setIsAdmin(data.data.isAdmin);
+    }
+    fetchData();
+  }, []);
   return (
     <>
       <Modal isCentered isOpen={isOpen} onClose={onClose} size={"lg"}>
@@ -139,7 +152,6 @@ export default function Nav(props) {
                   </Flex>
 
                   <MenuDivider />
-
                   <MenuItem justifyContent="center" onClick={toggleColorMode}>
                     {colorMode === "light" ? (
                       <>
@@ -152,6 +164,40 @@ export default function Nav(props) {
                     )}
                   </MenuItem>
                   <MenuDivider />
+                  <MenuItem display={isAdmin ? "revert" : "none"}>
+                    <Center mb="0" pb="0">
+                      <Badge
+                        display={isAdmin ? "revert" : "none"}
+                        colorScheme={"red"}
+                        justifyContent="center"
+                      >
+                        Menu Admin
+                      </Badge>
+                    </Center>
+                  </MenuItem>
+                  <MenuItem
+                    display={isAdmin ? "revert" : "none"}
+                    onClick={() => {
+                      var currentPage = window.location.href;
+                      if (currentPage.includes("/game")) {
+                        if (document.getElementById("partilhar") === null) {
+                          setSairGame("/users");
+                          onOpen();
+                        } else {
+                          navigate("/users");
+                          window.location.reload();
+                        }
+                      } else {
+                        navigate("/users");
+                        window.location.reload();
+                      }
+                    }}
+                  >
+                    <Text fontSize="lg" display={isAdmin ? "revert" : "none"}>
+                      Gerir Utilizadores
+                    </Text>
+                  </MenuItem>
+                  <MenuDivider display={isAdmin ? "revert" : "none"} />
 
                   <MenuItem
                     onClick={() => {

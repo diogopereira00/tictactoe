@@ -4,6 +4,8 @@ export const registerRoute = `${host}/api/auth/register`;
 export const loginRoute = `${host}/api/auth/login`;
 export const setAvatarRoute = `${host}/api/auth/setAvatar`;
 export const getCurrentUserRoute = `${host}/api/auth/getCurrentUser`;
+export const getAllUsersRoute = `${host}/api/auth/getAllUsers`;
+
 export const getCurrentRoomRoute = `${host}/api/games/getCurrentRoom`;
 export const getAllGamesFromPlayer = `${host}/api/games/getAllGamesFromPlayer`;
 

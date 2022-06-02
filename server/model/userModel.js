@@ -27,6 +27,16 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  created: {
+    type: Date,
+    required: false,
+    unique: false,
+  },
+  banned: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 module.exports = mongoose.model("Users", userSchema);

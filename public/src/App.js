@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import SetAvatar from "./pages/SetAvatar";
 import "./App.css";
 import MatchHistory from "./pages/MatchHistory";
+import Users from "./pages/Users";
 export default function App() {
   return (
     <BrowserRouter>
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/setAvatar" element={<SetAvatar />} />
         <Route path="/matchHistory" element={<MatchHistory />} />
         <Route path="/" element={<Chat />} />
+        <Route path="/users" element={<Users />} />
         <Route path="/game" element={<Game />} />
       </Routes>
     </BrowserRouter>
