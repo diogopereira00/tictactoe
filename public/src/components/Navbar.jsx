@@ -164,17 +164,15 @@ export default function Nav(props) {
                     )}
                   </MenuItem>
                   <MenuDivider />
-                  <MenuItem display={isAdmin ? "revert" : "none"}>
-                    <Center mb="0" pb="0">
-                      <Badge
-                        display={isAdmin ? "revert" : "none"}
-                        colorScheme={"red"}
-                        justifyContent="center"
-                      >
-                        Menu Admin
-                      </Badge>
-                    </Center>
-                  </MenuItem>
+                  <Center mb="0" pb="0">
+                    <Badge
+                      display={isAdmin ? "revert" : "none"}
+                      colorScheme={"red"}
+                      justifyContent="center"
+                    >
+                      Menu Admin
+                    </Badge>
+                  </Center>
                   <MenuItem
                     display={isAdmin ? "revert" : "none"}
                     onClick={() => {
