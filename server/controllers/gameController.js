@@ -5,34 +5,36 @@ const { use } = require("../routes/userRoutes");
 
 module.exports.create = async (req, res, next) => {
   try {
-    const { gameID, player1, melhorde, public } = req.body;
+    const { player1, melhorde, public } = req.body;
     const player1Data = await User.findById(player1);
-    const gameIDcheck = await Game.findOne({ gameID });
-    //verifica se o player1 ja tem um jogo aberto, nem ningem
-    const player1Check = await Game.findOne({ player1 }).where({ status: "open" });
-    var game = "";
-
+    random = Array.from(Array(8), () => Math.floor(Math.random() * 36).toString(36)).join("");
+    console.log(random);
+    const gameIDcheck = await Game.findOne({ gameID: random });
     if (gameIDcheck) return res.json({ msg: "Erro", status: false });
-    if (player1Check === null) {
-      console.log(player1);
-      game = await Game.create({
-        gameID,
-        player1,
-        player2: "",
-        status: "open",
-        vencedor: "",
-        melhorde,
-        public,
-        createTime: new Date(),
-        endTime: "",
-      });
-    } else {
-      if (player1Check.player1 === player1) {
-        game = player1Check;
-      } else {
-        return res.json({ msg: "Erro", status: false });
-      }
+    //verifica se o player1 ja tem um jogo aberto, sem ninguem
+    console.log("a");
+    const player1Check = await Game.findOne({ player1 }).where({ status: "open" });
+    console.log(player1Check);
+    var game = "";
+    if (player1Check !== null) {
+      console.log("b");
+      await Game.findOne({ player1 }).where({ status: "open" }).remove();
     }
+
+    game = await Game.create({
+      gameID: random,
+      player1,
+      player2: "",
+      status: "open",
+      vencedor: "",
+      melhorde,
+      public,
+      createTime: new Date(),
+      endTime: "",
+    });
+
+    console.log(game);
+
     // console.log(game);
 
     return res.json({

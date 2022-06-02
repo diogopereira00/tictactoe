@@ -210,13 +210,21 @@ function CurrentGame(props) {
       } else {
         // means you are player 1
         const newRoomName = random();
-        const melhorde = await JSON.parse(localStorage.getItem("creategame"));
-        console.log(melhorde.tipoJogo);
+        var melhorde;
+        var publicGame;
+        try {
+          const game = await JSON.parse(localStorage.getItem("creategame"));
+          melhorde = game.tipoJogo;
+          publicGame = game.partidaPrivada;
+        } catch {
+          melhorde = 1;
+          publicGame = true;
+        }
         //verificar se o player ja tem um jogo aberto, se tiver entra nesse
         const { data } = await axios.post(createGameRoute, {
-          gameID: newRoomName,
+          // gameID: newRoomName,
           player1: props.creator.id,
-          melhorde: melhorde.tipoJogo,
+          melhorde: melhorde,
           public: !melhorde.partidaPrivada,
         });
         localStorage.removeItem("creategame");
