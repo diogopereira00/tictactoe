@@ -237,7 +237,12 @@ export default function Nav(props) {
                   <MenuItem>
                     <Text fontSize="lg">Definições</Text>
                   </MenuItem>
-                  <MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      localStorage.removeItem("user");
+                      window.location.reload();
+                    }}
+                  >
                     <Text fontSize="lg">Terminar sessão</Text>
                   </MenuItem>
                 </MenuList>
