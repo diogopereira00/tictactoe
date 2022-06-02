@@ -323,6 +323,7 @@ function Tabela(props) {
         Header: "TIPO DE JOGO",
         accessor: "melhorde",
         display: ["none", null, "revert"],
+        Cell: (tableProps) => <Text>MELHOR DE {tableProps.row.original.melhorde}</Text>,
       },
       {
         Header: "RESULTADO",
