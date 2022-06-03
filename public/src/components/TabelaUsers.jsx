@@ -42,6 +42,7 @@ import dayjs from "dayjs";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faAdd,
   faBan,
   faCheck,
   faCheckCircle,
@@ -49,13 +50,14 @@ import {
   faCircleXmark,
   faEdit,
   faPencil,
+  faRemove,
   faShield,
   faUserShield,
   faWandMagicSparkles,
   faX,
 } from "@fortawesome/free-solid-svg-icons";
 
-function CustomTable({ columns, data }) {
+function CustomTable({ id, columns, data }) {
   // Use the state and functions returned from useTable to build your UI
   const {
     getTableProps,
@@ -358,6 +360,7 @@ function TabelaUsers(props) {
         Header: "MUDAR EMAIL",
         Cell: (tableProps) => (
           <Button
+            w="90%"
             colorScheme={"yellow"}
             color="white"
             backgroundColor="yellow.500"
@@ -374,6 +377,7 @@ function TabelaUsers(props) {
         Header: "MUDAR PASSWORD",
         Cell: (tableProps) => (
           <Button
+            w="90%"
             colorScheme={"orange"}
             backgroundColor="orange.500"
             color="white"
@@ -393,11 +397,13 @@ function TabelaUsers(props) {
           <>
             {tableProps.row.original.banned === true ? (
               <Button
+                display={tableProps.row.original._id === props.id ? "none" : "flex"}
+                w="90%"
                 backgroundColor="green.700"
                 colorScheme={"red"}
                 color="white"
                 onClick={() => {
-                  console.log("Banir " + tableProps.row.original.username);
+                  console.log("Desbanir " + tableProps.row.original.username);
                 }}
               >
                 <FontAwesomeIcon size="lg" icon={faWandMagicSparkles} />
@@ -405,6 +411,8 @@ function TabelaUsers(props) {
               </Button>
             ) : (
               <Button
+                display={tableProps.row.original._id === props.id ? "none" : "flex"}
+                w="90%"
                 backgroundColor="red.700"
                 colorScheme={"red"}
                 color="white"
@@ -413,13 +421,49 @@ function TabelaUsers(props) {
                 }}
               >
                 <FontAwesomeIcon size="lg" icon={faBan} />
-                <Text pl="0.2rem">Ban </Text>
+                <Text pl="0.2rem">Banir </Text>
               </Button>
             )}
           </>
         ),
       },
-
+      {
+        Header: "ADMIN",
+        accessor: "isAdmin",
+        Cell: (tableProps) => (
+          <>
+            {tableProps.row.original.isAdmin === true ? (
+              <Button
+                w="90%"
+                display={tableProps.row.original._id === props.id ? "none" : "flex"}
+                backgroundColor="red.700"
+                colorScheme={"red"}
+                color="white"
+                onClick={() => {
+                  console.log("Retirar permissões " + tableProps.row.original.username);
+                }}
+              >
+                <FontAwesomeIcon size="lg" icon={faRemove} />
+                <Text pl="0.2rem">Remover admin</Text>
+              </Button>
+            ) : (
+              <Button
+                w="90%"
+                display={tableProps.row.original._id === props.id ? "none" : "flex"}
+                backgroundColor="green.700"
+                colorScheme={"red"}
+                color="white"
+                onClick={() => {
+                  console.log("Adicionar permissões " + tableProps.row.original.username);
+                }}
+              >
+                <FontAwesomeIcon size="lg" icon={faAdd} />
+                <Text pl="0.2rem">Tornar Admin</Text>
+              </Button>
+            )}
+          </>
+        ),
+      },
       // {
       //   Header: "TIPO DE JOGO",
       //   accessor: "melhorde",
@@ -537,7 +581,7 @@ function TabelaUsers(props) {
   console.log(users);
   const data = users;
 
-  return <CustomTable columns={columns} data={data} />;
+  return <CustomTable user={props.id} columns={columns} data={data} />;
 }
 
 export default TabelaUsers;
