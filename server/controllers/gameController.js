@@ -128,7 +128,34 @@ module.exports.endGameLeaver = async (req, res, next) => {
     next(ex);
   }
 };
+module.exports.winner = async (req, res, next) => {
+  try {
+    // console.log("id " + id);
+    const idWinner = req.params.id;
+    var game = await Game.findOne({ idWinner }).where({ status: "running" });
 
+    // console.log("gameeeeeeeeeee");
+    // console.log(game);
+    if (game.player1 === idWinner && game.player1 != null) {
+      // console.log("entrei aqui");
+      game = await Game.findOneAndUpdate(
+        { gameID: game.gameID },
+        { vencedor: game.player1, status: "closed", endTime: new Date() }
+      );
+    } else {
+      game = await Game.findOneAndUpdate(
+        { gameID: game.gameID },
+        { vencedor: game.player2, status: "closed", endTime: new Date() }
+      );
+    }
+    return res.json({
+      status: true,
+      game,
+    });
+  } catch (ex) {
+    next(ex);
+  }
+};
 module.exports.getCurrentRoom = async (req, res, next) => {
   try {
     const id = req.params.id;

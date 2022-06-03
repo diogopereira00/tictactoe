@@ -37,6 +37,7 @@ import {
   getCurrentRoomRoute,
   joinRoomRoute,
   leaverGameRoute,
+  winnerRoute,
 } from "../utils/APIRoutes";
 import Scoreboard from "./Scoreboard";
 import socket from "../context/socket";
@@ -59,7 +60,7 @@ function CurrentGame(props) {
   const paramsRoom = params.get("room");
   const [room, setRoom] = useState(paramsRoom);
 
-  const [tipoJogo, setTipoJogo] = useState([]);
+  const [tipoJogo, setTipoJogo] = useState(-1);
   const [player1ID, setPlayer1ID] = useState([]);
   const [player2ID, setPlayer2ID] = useState([]);
 
@@ -71,18 +72,23 @@ function CurrentGame(props) {
 
   const [player1Score, setPlayer1Score] = useState(0);
   const [player2Score, setPlayer2Score] = useState(0);
+
   const [lastWinner, setLastWinner] = useState("X");
   const [houveEmpate, setHouveEmpate] = useState(false);
+  const [leaver, setLeaver] = useState("");
+  const [vencedor, setVencedor] = useState("");
+
+  const [acabou, setAcabou] = useState(false);
   const toast = useToast();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isOpenEnd, onOpen: OnOpenEnd, onClose: OnCloseEnd } = useDisclosure();
   const {
     isOpen: isOpenErrorJoin,
     onOpen: onOpenErrorJoin,
     onClose: onCloseErrorJoin,
   } = useDisclosure();
 
-  var testePlayer2 = "";
   const turn = (index) => {
     if (!game[index] && !winner && myTurn && hasOpponent) {
       socket.emit("reqTurn", JSON.stringify({ index, value: xo, room }));
@@ -114,6 +120,7 @@ function CurrentGame(props) {
         }
         setLastWinner(player);
       }
+
       //se nao houver vencedor e se for a jogada 9 entao
       else if (turnNumber === 9) {
         setHouveEmpate(true);
@@ -139,6 +146,28 @@ function CurrentGame(props) {
   }, [game, turnNumber, xo]);
 
   useEffect(() => {
+    async function fetchData() {
+      setAcabou(true);
+      var aux;
+      if (
+        (player1Score > parseInt(tipoJogo) / 2 && player1Score > 0) ||
+        (player2Score > parseInt(tipoJogo) / 2 && player2Score > 0)
+      ) {
+        if (player1Score > player2Score) {
+          setVencedor(player1ID);
+          aux = player1ID;
+        } else {
+          setVencedor(player2ID);
+          aux = player2ID;
+        }
+        OnOpenEnd();
+        await axios.post(`${winnerRoute}/${aux}`);
+      }
+    }
+    fetchData();
+  });
+
+  useEffect(() => {
     socket.on("playerTurn", (json) => {
       setTurnData(json);
     });
@@ -151,7 +180,7 @@ function CurrentGame(props) {
       setPlayer2Username(player2);
       setPlayer2Avatar(player2Avatar);
       setPlayer2ID(player2ID);
-      testePlayer2 = player2ID;
+      // testePlayer2 = player2ID;
       // alert(player2ID);
 
       setHasOpponent(true);
@@ -178,7 +207,7 @@ function CurrentGame(props) {
     async function fetchData() {
       if (paramsRoom) {
         // means you are player 2
-        console.log(paramsRoom);
+        // console.log(paramsRoom);
 
         //verifica o segundo player
         const { data } = await axios.post(`${joinRoomRoute}/${paramsRoom}`, {
@@ -225,7 +254,7 @@ function CurrentGame(props) {
           // gameID: newRoomName,
           player1: props.creator.id,
           melhorde: melhorde,
-          public: !melhorde.partidaPrivada,
+          public: publicGame,
         });
         localStorage.removeItem("creategame");
         const roomName = data.game.gameID;
@@ -235,7 +264,6 @@ function CurrentGame(props) {
           setPlayer2ID("");
           setPlayer2Username("A aguardar adversario...");
           setTipoJogo(data.game.melhorde);
-
           setPlayer1Avatar(data.game.player1.avatar);
           setPlayer2Avatar(user);
           socket.emit("create", roomName);
@@ -251,20 +279,24 @@ function CurrentGame(props) {
 
   useEffect(() => {
     if (room != null) {
-      console.log("sala..." + room);
+      // console.log("sala..." + room);
 
       socket.once("leaverGame", async (idUserLeaver) => {
         const dados = await axios.get(`${getCurrentRoomRoute}/${room}`);
-        console.log(dados);
-        if (idUserLeaver === dados.data.game.player1) {
-          await axios.post(`${leaverGameRoute}/${dados.data.game.player1}`);
+        // console.log(dados.data);
+        if (dados.data.game.status === "running") {
+          setLeaver(idUserLeaver);
 
-          onOpen();
-        }
-        if (idUserLeaver === dados.data.game.player2) {
-          await axios.post(`${leaverGameRoute}/${dados.data.game.player2}`);
+          if (idUserLeaver === dados.data.game.player1) {
+            await axios.post(`${leaverGameRoute}/${dados.data.game.player1}`);
 
-          onOpen();
+            onOpen();
+          }
+          if (idUserLeaver === dados.data.game.player2) {
+            await axios.post(`${leaverGameRoute}/${dados.data.game.player2}`);
+
+            onOpen();
+          }
         }
       });
     }
@@ -279,9 +311,49 @@ function CurrentGame(props) {
 
   return (
     <ChakraProvider theme={theme}>
+      {/* MODAL TERMINOU O JOGO */}
+      <Modal
+        closeOnOverlayClick={false}
+        closeOnEsc={false}
+        isCentered
+        isOpen={isOpenEnd}
+        onClose={OnCloseEnd}
+        size={"lg"}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            <Text fontSize="2xl" fontWeight="bold" color="red.500">
+              <WarningTwoIcon mb="1" mr="2" />
+              Terminou o jogo!
+            </Text>
+          </ModalHeader>
+          <ModalBody>
+            <Text fontSize="xl" fontWeight="bold">
+              {props.creator.id === vencedor
+                ? "Parabéns, ganhaste o jogo"
+                : "Perdeste o jogo, da proxima levas a melhor!"}
+            </Text>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              onClick={() => {
+                navigate("/");
+                window.location.reload();
+              }}
+            >
+              Voltar ao lobby
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       {/* MODAL ERRO, JOGO CHEIO */}
       <Modal
         closeOnOverlayClick={false}
+        closeOnEsc={false}
         isCentered
         isOpen={isOpenErrorJoin}
         onClose={onCloseErrorJoin}
@@ -315,7 +387,14 @@ function CurrentGame(props) {
         </ModalContent>
       </Modal>
       {/* MODAL UTILIZADOR SAIU, GANHASTE O JOGO */}
-      <Modal closeOnOverlayClick={false} isCentered isOpen={isOpen} onClose={onClose} size={"lg"}>
+      <Modal
+        closeOnOverlayClick={false}
+        closeOnEsc={false}
+        isCentered
+        isOpen={isOpen}
+        onClose={onClose}
+        size={"lg"}
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -325,7 +404,9 @@ function CurrentGame(props) {
           </ModalHeader>
           <ModalBody>
             <Text fontSize="xl" fontWeight="bold">
-              Vences-te o jogo! O {player2Username} abandonou a partida.
+              {leaver === player1ID
+                ? "Vences-te o jogo! O " + player1Username + " abandonou a partida."
+                : "Vences-te o jogo! O " + player2Username + " abandonou a partida."}
             </Text>
           </ModalBody>
 

@@ -11,5 +11,6 @@ export const getAllGamesFromPlayer = `${host}/api/games/getAllGamesFromPlayer`;
 
 export const joinRoomRoute = `${host}/api/games/joinRoom`;
 export const leaverGameRoute = `${host}/api/games/leaver`;
+export const winnerRoute = `${host}/api/games/winner`;
 
 export const createGameRoute = `${host}/api/games/create`;
