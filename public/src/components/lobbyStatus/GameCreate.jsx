@@ -93,7 +93,7 @@ export default function GameCreate(props) {
                 console.log(partidaPrivada);
                 localStorage.setItem(
                   "creategame",
-                  JSON.stringify({ tipoJogo: selectGame, partidaPrivada: partidaPrivada })
+                  JSON.stringify({ tipoJogo: selectGame, partidaPrivada: !partidaPrivada })
                 );
                 navigate("/game");
                 window.location.reload();
