@@ -23,6 +23,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import User from "../CardComponents/User";
 
 export default function GameCreate(props) {
   const navigate = useNavigate();
@@ -105,97 +106,59 @@ export default function GameCreate(props) {
         </ModalContent>
       </Modal>
 
-      <Center py={3}>
-        <Box
-          maxW={"350px"}
-          w={"full"}
-          bg={useColorModeValue("white", "#00000076")}
-          boxShadow={"2xl"}
-          rounded={"md"}
-          overflow={"hidden"}
-        >
-          {/* ==============
+      <Box
+        mt={3}
+        maxW={"350px"}
+        w={"full"}
+        bg={useColorModeValue("white", "#00000076")}
+        boxShadow={"2xl"}
+        rounded={"md"}
+        overflow={"hidden"}
+      >
+        <Center pt={5} spacing={1} align={"center"}>
+          <Badge fontSize={18} colorScheme="gray">
+            CRIA AGORA UMA NOVA PARTIDA
+          </Badge>
+        </Center>
+        {/* ==============
           USER QUE CRIOU
           ============== */}
-          <Box pl={10} pr={10}>
-            <Flex justify={"center"} mt={5}>
-              <Box
-                bg={useColorModeValue("white", "#303030a6")}
-                borderRadius={5}
-                pl={2}
-                pr={2}
-                pt={2}
-              >
-                <Avatar
-                  m={2}
-                  size={"xl"}
-                  src={props.image}
-                  alt={"Author"}
-                  css={{
-                    border: "3px solid #0a72e7",
-                  }}
-                />
-                <Stack spacing={0} align={"center"} mb={2}>
-                  <Badge fontSize={13} variant="subtle" mt={3} mb={3}>
-                    {props.username}
-                  </Badge>
-                </Stack>
-              </Box>
-              <Box mt={14} borderRadius={5} ml={3} mr={3}>
-                <Stack spacing={0} align={"center"}>
-                  <Badge fontSize={20} colorScheme="default">
-                    VS
-                  </Badge>
-                </Stack>
-              </Box>
-
-              <Box
-                bg={useColorModeValue("white", "#303030a6")}
-                borderRadius={5}
-                pl={2}
-                pr={2}
-                pt={2}
-              >
-                <Avatar
-                  m={2}
-                  size={"xl"}
-                  src={opentojoin}
-                  alt={"Author"}
-                  css={{
-                    border: "3px solid #0a72e7",
-                  }}
-                />
-                <Stack spacing={0} align={"center"}>
-                  <Badge fontSize={13} variant="subtle" mt={3} mb={3}>
-                    PROCURAR...
-                  </Badge>
-                </Stack>
-              </Box>
-            </Flex>
-            <Box pb={5} pt={5}>
-              <Button
-                w={"full"}
-                bg="#0a72e7"
-                color={"white"}
-                rounded={"md"}
-                _hover={{
-                  transform: "translateY(-2px)",
-                  boxShadow: "lg",
-                }}
-                onClick={() => {
-                  setSelectGame(undefined);
-                  setPartidaPrivada(false);
-                  onOpen();
-                  // navigate("/game");
-                  // window.location.reload();
-                }}
-              >
-                Criar uma partida
-              </Button>
+        <Box pl={10} pr={10}>
+          <Flex justify={"center"} mt={5}>
+            <User player1Avatar={props.player1Avatar} player1Username={props.player1Username} />
+            <Box mt={14} borderRadius={5} ml={3} mr={3}>
+              <Stack spacing={0} align={"center"}>
+                <Badge fontSize={20} colorScheme="default">
+                  VS
+                </Badge>
+              </Stack>
             </Box>
+            <User player1Avatar={""} player1Username={"PROCURAR..."} />
+          </Flex>
+
+          <Box pb={5} pt={5}>
+            <Button
+              w={"full"}
+              bg="#0a72e7"
+              color={"white"}
+              rounded={"md"}
+              _hover={{
+                transform: "translateY(-2px)",
+                boxShadow: "lg",
+              }}
+              onClick={() => {
+                setSelectGame(undefined);
+                setPartidaPrivada(false);
+                onOpen();
+                // navigate("/game");
+                // window.location.reload();
+              }}
+            >
+              Criar uma partida
+            </Button>
           </Box>
         </Box>
-      </Center>
+      </Box>
     </>
   );
 }

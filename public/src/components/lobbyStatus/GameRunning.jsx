@@ -9,100 +9,61 @@ import {
   Badge,
 } from "@chakra-ui/react";
 import React from "react";
+import User from "../CardComponents/User";
 
-export default function GameRunning() {
+export default function GameRunning(props) {
   return (
     <>
-      <Center py={3}>
-        <Box
-          maxW={"350px"}
-          w={"full"}
-          bg={useColorModeValue("white", "#00000076")}
-          boxShadow={"2xl"}
-          rounded={"md"}
-          overflow={"hidden"}
-        >
-          {/* ==============
+      <Box
+        mt={3}
+        maxW={"350px"}
+        w={"full"}
+        bg={useColorModeValue("white", "#00000076")}
+        boxShadow={"2xl"}
+        rounded={"md"}
+        overflow={"hidden"}
+      >
+        <Center pt={5} spacing={1} align={"center"}>
+          <Badge fontSize={18} colorScheme="orange">
+            JOGO#{props.gameID}
+          </Badge>
+          <Badge ml="1" fontSize={18} colorScheme="orange">
+            MELHOR DE {props.melhorde}
+          </Badge>
+        </Center>
+        {/* ==============
           USER QUE CRIOU
           ============== */}
-          <Box pl={10} pr={10}>
-            <Flex justify={"center"} mt={5}>
-              <Box
-                bg={useColorModeValue("white", "#303030a6")}
-                borderRadius={5}
-                pl={2}
-                pr={2}
-                pt={2}
-              >
-                {" "}
-                <Avatar
-                  m={2}
-                  size={"xl"}
-                  src={
-                    "https://media-exp1.licdn.com/dms/image/C4E03AQHmZt7x_3pYQg/profile-displayphoto-shrink_800_800/0/1633035509100?e=1658361600&v=beta&t=FcmgTMiB0lsmLvnh9doCF43Bqrqtg01_iU1NJZNwKDU"
-                  }
-                  alt={"Author"}
-                  css={{
-                    border: "4px solid #FBD38D",
-                  }}
-                />
-                <Stack spacing={0} align={"center"} mb={2}>
-                  <Badge colorScheme="orange" fontSize={13} mt={3} mb={3}>
-                    Daniel Dias
-                  </Badge>
-                </Stack>
-              </Box>
-              <Box mt={14} borderRadius={5} ml={5} mr={5}>
-                <Stack spacing={0} align={"center"}>
-                  <Badge fontSize={20} colorScheme="default">
-                    VS
-                  </Badge>{" "}
-                </Stack>
-              </Box>
-
-              <Box
-                bg={useColorModeValue("white", "#303030a6")}
-                borderRadius={5}
-                pl={2}
-                pr={2}
-                pt={2}
-              >
-                {" "}
-                <Avatar
-                  m={2}
-                  size={"xl"}
-                  src={"https://cdn.pixabay.com/photo/2017/12/04/13/24/donkey-2996965__480.jpg"}
-                  alt={"Oponente"}
-                  css={{
-                    border: "3px solid #4A5568",
-                  }}
-                />
-                <Stack spacing={0} align={"center"}>
-                  <Badge colorScheme="orange" fontSize={13} mt={3} mb={3}>
-                    CHAPO
-                  </Badge>
-                </Stack>
-              </Box>
-            </Flex>
-            <Box pb={5} pt={5}>
-              <Button
-                isLoading
-                loadingText="Em andamento..."
-                w={"full"}
-                bg="#e2ce28"
-                color={"white"}
-                rounded={"md"}
-                _hover={{
-                  transform: "translateY(-2px)",
-                  boxShadow: "lg",
-                }}
-              >
-                Em andamento{" "}
-              </Button>
+        <Box pl={10} pr={10}>
+          <Flex justify={"center"} mt={5}>
+            <User player1Avatar={props.player1Avatar} player1Username={props.player1Username} />
+            <Box mt={14} borderRadius={5} ml={3} mr={3}>
+              <Stack spacing={0} align={"center"}>
+                <Badge fontSize={20} colorScheme="default">
+                  VS
+                </Badge>
+              </Stack>
             </Box>
+            <User player1Avatar={props.player2Avatar} player1Username={props.player2Username} />
+          </Flex>
+          <Box pb={5} pt={5}>
+            <Button
+              isLoading
+              loadingText="Em andamento..."
+              w={"full"}
+              bg="#e2ce28"
+              color={"white"}
+              rounded={"md"}
+              _hover={{
+                transform: "translateY(-2px)",
+                boxShadow: "lg",
+              }}
+            >
+              Em andamento{" "}
+            </Button>
           </Box>
         </Box>
-      </Center>
+      </Box>
     </>
   );
 }

@@ -215,7 +215,11 @@ module.exports.getAllPublicOpenGames = async (req, res, next) => {
   try {
     // const id = req.params.id;
     // console.log("id " + id);
-    const game = await Game.find({ status: "open", public: true });
+    const game = await Game.find({
+      $or: [{ status: "open" }, { status: "running" }],
+      public: true,
+    }).sort({ status: 1 });
+
     // console.log(game);
     return res.json({
       game,

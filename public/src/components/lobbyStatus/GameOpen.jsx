@@ -8,99 +8,70 @@ import {
   Button,
   useColorModeValue,
   Badge,
+  VStack,
+  HStack,
 } from "@chakra-ui/react";
 import React from "react";
+import User from "../CardComponents/User";
+import { useNavigate } from "react-router-dom";
 
-export default function GameOpen() {
+export default function GameOpen(props) {
+  const navigate = useNavigate();
   return (
     <>
-      <Center py={3}>
-        <Box
-          maxW={"350px"}
-          w={"full"}
-          bg={useColorModeValue("white", "#00000076")}
-          boxShadow={"2xl"}
-          rounded={"md"}
-          overflow={"hidden"}
-        >
-          {/* ==============
+      <Box
+        mt={3}
+        maxW={"350px"}
+        w={"full"}
+        bg={useColorModeValue("white", "#00000076")}
+        boxShadow={"2xl"}
+        rounded={"md"}
+        overflow={"hidden"}
+      >
+        <Center pt={5} spacing={1} align={"center"}>
+          <Badge fontSize={18} colorScheme="green">
+            JOGO#{props.gameID}
+          </Badge>
+          <Badge ml="1" fontSize={18} colorScheme="green">
+            MELHOR DE {props.melhorde}
+          </Badge>
+        </Center>
+        {/* ==============
           USER QUE CRIOU
           ============== */}
-          <Box pl={10} pr={10}>
-            <Flex justify={"center"} mt={5}>
-              <Box
-                bg={useColorModeValue("white", "#303030a6")}
-                borderRadius={5}
-                pl={2}
-                pr={2}
-                pt={2}
-              >
-                <Avatar
-                  m={2}
-                  size={"xl"}
-                  src={
-                    "https://media-exp1.licdn.com/dms/image/C4E03AQHmZt7x_3pYQg/profile-displayphoto-shrink_800_800/0/1633035509100?e=1658361600&v=beta&t=FcmgTMiB0lsmLvnh9doCF43Bqrqtg01_iU1NJZNwKDU"
-                  }
-                  alt={"Author"}
-                  css={{
-                    border: "3px solid #0a72e7",
-                  }}
-                />
-                <Stack spacing={0} align={"center"} mb={2}>
-                  <Badge fontSize={13} variant="subtle" mt={3} mb={3}>
-                    Daniel Dias
-                  </Badge>
-                </Stack>
-              </Box>
-              <Box mt={14} borderRadius={5} ml={3} mr={3}>
-                <Stack spacing={0} align={"center"}>
-                  <Badge fontSize={20} colorScheme="default">
-                    VS
-                  </Badge>
-                </Stack>
-              </Box>
-
-              <Box
-                bg={useColorModeValue("white", "#303030a6")}
-                borderRadius={5}
-                pl={2}
-                pr={2}
-                pt={2}
-              >
-                {" "}
-                <Avatar
-                  m={2}
-                  size={"xl"}
-                  src={opentojoin}
-                  alt={"Oponente"}
-                  css={{
-                    border: "3px solid #048918",
-                  }}
-                />
-                <Stack spacing={0} align={"center"}>
-                  <Badge colorScheme="green" variant="solid" mt={3} mb={3}>
-                    ABERTO
-                  </Badge>
-                </Stack>
-              </Box>
-            </Flex>
-            <Box pb={5} pt={5}>
-              <Button
-                w={"full"}
-                bg="#048918"
-                color={"white"}
-                rounded={"md"}
-                _hover={{
-                  transform: "translateY(-2px)",
-                  boxShadow: "lg",
-                }}
-              >
-                Entrar na partida
-              </Button>
+        <Box pl={10} pr={10}>
+          <Flex justify={"center"} mt={5}>
+            <User player1Avatar={props.player1Avatar} player1Username={props.player1Username} />
+            <Box mt={14} borderRadius={5} ml={3} mr={3}>
+              <Stack spacing={0} align={"center"}>
+                <Badge fontSize={20} colorScheme="default">
+                  VS
+                </Badge>
+              </Stack>
             </Box>
+            <User player1Avatar={""} player1Username={"PROCURAR..."} />
+          </Flex>
+
+          <Box pb={5} pt={5}>
+            <Button
+              w={"full"}
+              bg="#048918"
+              color={"white"}
+              rounded={"md"}
+              _hover={{
+                transform: "translateY(-2px)",
+                boxShadow: "lg",
+              }}
+              onClick={() => {
+                navigate(`/game?room=${props.gameID}`);
+                window.location.reload();
+              }}
+            >
+              Entrar na partida
+            </Button>
           </Box>
         </Box>
-      </Center>
+      </Box>
     </>
   );
 }

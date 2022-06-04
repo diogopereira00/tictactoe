@@ -79,7 +79,7 @@ function Register() {
           initialValues={{ email: "", password: "", username: "", confirmPassword: "" }}
           validationSchema={Yup.object({
             username: Yup.string()
-              .min(6, "O seu nome de utilizador tem de ter pelo menos 6 caracteres")
+              .min(4, "O seu nome de utilizador tem de ter pelo menos 4 caracteres")
               .matches(
                 /^[a-zA-Z0-9@]+$/,
                 "O nome de utilizador não pode ter espaços nem caracteres especiais"
