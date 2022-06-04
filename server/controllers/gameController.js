@@ -8,16 +8,16 @@ module.exports.create = async (req, res, next) => {
     const { player1, melhorde, public } = req.body;
     const player1Data = await User.findById(player1);
     random = Array.from(Array(8), () => Math.floor(Math.random() * 36).toString(36)).join("");
-    console.log(random);
+    // console.log(random);
     const gameIDcheck = await Game.findOne({ gameID: random });
     if (gameIDcheck) return res.json({ msg: "Erro", status: false });
     //verifica se o player1 ja tem um jogo aberto, sem ninguem
-    console.log("a");
+    // console.log("a");
     const player1Check = await Game.findOne({ player1 }).where({ status: "open" });
-    console.log(player1Check);
+    // console.log(player1Check);
     var game = "";
     if (player1Check !== null) {
-      console.log("b");
+      // console.log("b");
       await Game.findOne({ player1 }).where({ status: "open" }).remove();
     }
 
@@ -33,7 +33,7 @@ module.exports.create = async (req, res, next) => {
       endTime: "",
     });
 
-    console.log(game);
+    // console.log(game);
 
     // console.log(game);
 
@@ -201,10 +201,38 @@ module.exports.getAllGamesFromPlayer = async (req, res, next) => {
     //   }
     // });
 
-    console.log(game);
+    // console.log(game);
     // console.log(game);
     return res.json({
       game,
+    });
+  } catch (ex) {
+    next(ex);
+  }
+};
+
+module.exports.getAllPublicOpenGames = async (req, res, next) => {
+  try {
+    // const id = req.params.id;
+    // console.log("id " + id);
+    const game = await Game.find({ status: "open", public: true });
+    // console.log(game);
+    return res.json({
+      game,
+    });
+  } catch (ex) {
+    next(ex);
+  }
+};
+module.exports.deleteGame = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    // console.log("id " + id);
+    console.log("tou aqui");
+    const game = await Game.find({ gameID: id }).deleteOne();
+    console.log(game);
+    return res.json({
+      status: "ok",
     });
   } catch (ex) {
     next(ex);

@@ -14,3 +14,5 @@ export const leaverGameRoute = `${host}/api/games/leaver`;
 export const winnerRoute = `${host}/api/games/winner`;
 
 export const createGameRoute = `${host}/api/games/create`;
+export const getAllPublicOpenGamesRoute = `${host}/api/games/getAllPublicOpenGames`;
+export const deleteGameRoute = `${host}/api/games/deleteGame`;

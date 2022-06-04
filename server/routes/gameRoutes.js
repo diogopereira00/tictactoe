@@ -5,6 +5,8 @@ const {
   endGameLeaver,
   getAllGamesFromPlayer,
   winner,
+  getAllPublicOpenGames,
+  deleteGame,
 } = require("../controllers/gameController");
 
 const router = require("express").Router();
@@ -15,5 +17,7 @@ router.post("/leaver/:id", endGameLeaver);
 router.post("/winner/:id", winner);
 
 router.get("/getAllGamesFromPlayer/:id", getAllGamesFromPlayer);
+router.get("/getAllPublicOpenGames/", getAllPublicOpenGames);
+router.post("/deleteGame/:id", deleteGame);
 
 module.exports = router;

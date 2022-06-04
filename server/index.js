@@ -40,6 +40,7 @@ mongoose
 const server = http.createServer(app);
 
 const socket = require("socket.io");
+const { db } = require("./model/gameModel");
 const io = socket(server, {
   cors: {
     origin: "http://192.168.1.96:3000",
@@ -59,7 +60,7 @@ io.on("connection", (socket) => {
     socket.userID = idUser;
     console.log(users);
   });
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     console.log(
       "disconectado " +
         socket.username +
@@ -69,7 +70,11 @@ io.on("connection", (socket) => {
         socket.id +
         " na sala "
     );
-
+    var teste = db.collection("games");
+    var existejogo = await teste.findOne({ player1: socket.userID, status: "open" });
+    if (existejogo !== null) {
+      await teste.deleteOne({ player1: socket.userID, status: "open" });
+    }
     delete users[socket.id];
     io.emit("leaverGame", socket.userID);
     io.emit("onlineUsers", Object.keys(users).length);
