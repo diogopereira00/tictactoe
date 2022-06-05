@@ -28,7 +28,7 @@ import User from "../CardComponents/User";
 export default function GameCreate(props) {
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectGame, setSelectGame] = useState(undefined);
+  const [selectGame, setSelectGame] = useState(1);
   const [partidaPrivada, setPartidaPrivada] = useState(false);
 
   return (
@@ -147,7 +147,7 @@ export default function GameCreate(props) {
                 boxShadow: "lg",
               }}
               onClick={() => {
-                setSelectGame(undefined);
+                setSelectGame(1);
                 setPartidaPrivada(false);
                 onOpen();
                 // navigate("/game");
