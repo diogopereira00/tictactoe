@@ -48,20 +48,19 @@ export default function Chat() {
     }
     setGames(todosJogos);
     setIsLoading(false);
-    if (games === todosJogos) {
-      // console.log("in validation");
-    } else {
-      // console.log(todosJogos.data.game);
-    }
   }
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(() => {
-      fetchData();
-    }, 10000);
 
-    return () => clearInterval(interval);
+    socket.on("refreshJogos", () => {
+      fetchData();
+    });
+    // const interval = setInterval(() => {
+    //   fetchData();
+    // }, 10000);
+
+    // return () => clearInterval(interval);
   }, []);
 
   return (

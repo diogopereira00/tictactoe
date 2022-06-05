@@ -56,9 +56,11 @@ io.on("connection", (socket) => {
     }
 
     io.emit("onlineUsers", Object.keys(users).length);
+    io.emit("refreshJogos");
+
     socket.username = user;
     socket.userID = idUser;
-    console.log(users);
+    // console.log(users);
   });
   socket.on("disconnect", async () => {
     console.log(
@@ -78,6 +80,7 @@ io.on("connection", (socket) => {
     delete users[socket.id];
     io.emit("leaverGame", socket.userID);
     io.emit("onlineUsers", Object.keys(users).length);
+    io.emit("refreshJogos");
   });
   socket.on("reqTurn", (data) => {
     const room = JSON.parse(data).room;
@@ -86,12 +89,14 @@ io.on("connection", (socket) => {
 
   socket.on("create", (sala) => {
     socket.join(sala);
+    io.emit("refreshJogos");
   });
 
   socket.on("join", (sala) => {
     socket.join(sala.sala);
     // console.log(sala.player2);
     io.to(sala.sala).emit("opponent_joined", sala.player2, sala.player2Avatar, sala.player2ID);
+    io.emit("refreshJogos");
   });
 
   socket.on("reqRestart", (data) => {
